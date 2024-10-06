@@ -19,6 +19,8 @@ public class CreditEntity {
     private Long id;
 
     private Integer Capital;
-    private Float Monthly_interest;
-    private Float Total_payments;
+    private Double Annual_interest;
+    private Double Years;
+    // 1 = Primera vivienda, 2 = Segunda vivienda, 3 = Propiedades comerciles, 4 = Remodelacion
+    private Integer Type;
 }
