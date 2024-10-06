@@ -6,13 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Clientes")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 
-//Puede ser posible que sea mejor crear un usuario donde este es reconocido con un RolID
-public class ClienteEntity {
+
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,10 @@ public class ClienteEntity {
 
     private String Rut;
     private String Email;
-    private String Nombre;
+    private String Name;
     private String Password;
+    //Para diferenciar Ejecutivos de no Ejecutivos
+    private Boolean Executive;
+    private Integer Income;
 
 }

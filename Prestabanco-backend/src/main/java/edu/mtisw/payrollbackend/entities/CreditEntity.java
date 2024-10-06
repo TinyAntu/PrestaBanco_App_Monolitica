@@ -6,20 +6,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Ejecutivos")
+@Table(name = "credits")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class EjecutivoEntity {
+public class CreditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Long id;
 
-    private String Rut;
-    private String Email;
-    private String Nombre;
-    private String Password;
+    private Integer Capital;
+    private Float Monthly_interest;
+    private Float Total_payments;
 }
