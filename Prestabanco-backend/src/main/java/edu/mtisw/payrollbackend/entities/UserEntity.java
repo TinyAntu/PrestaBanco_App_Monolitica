@@ -23,8 +23,8 @@ public class UserEntity {
     private String Email;
     private String Name;
     private String Password;
-    //Para diferenciar Ejecutivos de no Ejecutivos
-    private Boolean Executive;
+    //Id de rol 1 = Usuario, 2 = Ejecutivo, 3 = super admin
+    private Integer Role;
     private Integer Income;
 
 }
