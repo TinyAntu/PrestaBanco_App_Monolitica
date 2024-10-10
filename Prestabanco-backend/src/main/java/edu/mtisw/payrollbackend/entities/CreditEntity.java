@@ -18,9 +18,9 @@ public class CreditEntity {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    private Integer Capital;
-    private Double Annual_interest;
-    private Double Years;
+    private Integer capital;
+    private Double annual_interest;
+    private Double years;
     // 1 = Primera vivienda, 2 = Segunda vivienda, 3 = Propiedades comerciles, 4 = Remodelacion
-    private Integer Type;
+    private Integer type;
 }

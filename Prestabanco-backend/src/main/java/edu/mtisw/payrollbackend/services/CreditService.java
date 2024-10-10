@@ -1,11 +1,12 @@
 package edu.mtisw.payrollbackend.services;
+import edu.mtisw.payrollbackend.repositories.CreditRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CreditService {
     @Autowired
-    CreditService creditService;
+    CreditRepository creditRepository;
 
     //Descripcion: Realiza el calculo de la cuota mensual del prestamo
     public Double montly_Share(Integer Capital, Double Annual_interest, Double Years){

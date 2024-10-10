@@ -19,12 +19,12 @@ public class UserEntity {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    private String Rut;
-    private String Email;
-    private String Name;
-    private String Password;
+    private String rut;
+    private String email;
+    private String mame;
+    private String password;
     //Id de rol 1 = Usuario, 2 = Ejecutivo, 3 = super admin
-    private Integer Role;
-    private Integer Income;
+    private Integer role;
+    private Integer income;
 
 }
