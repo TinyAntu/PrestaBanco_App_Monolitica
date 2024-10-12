@@ -23,4 +23,13 @@ public class CreditEntity {
     private Double years;
     // 1 = Primera vivienda, 2 = Segunda vivienda, 3 = Propiedades comerciles, 4 = Remodelacion
     private Integer type;
+
+    //El estado default es falso por que no ha sido aprobado
+    @Column(nullable = false)
+    private Boolean state = false;
+
+    //Un credito debe tener su usario
+    @ManyToOne
+    @JoinColumn(name ="user_id", nullable = false)
+    private UserEntity user;
 }
