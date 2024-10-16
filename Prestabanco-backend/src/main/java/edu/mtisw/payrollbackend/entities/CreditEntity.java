@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @Table(name = "credits")
@@ -23,10 +24,13 @@ public class CreditEntity {
     private Double years;
     // 1 = Primera vivienda, 2 = Segunda vivienda, 3 = Propiedades comerciles, 4 = Remodelacion
     private Integer type;
-
+    private Integer income;
     //El estado default es falso por que no ha sido aprobado
     @Column(nullable = false)
     private Boolean state = false;
+
+    @OneToMany(mappedBy = "credit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DocumentEntity> documents;
 
     //Un credito debe tener su usario
     @ManyToOne

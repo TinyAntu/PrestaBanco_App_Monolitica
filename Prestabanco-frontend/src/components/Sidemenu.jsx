@@ -62,6 +62,14 @@ export default function Sidemenu({ open, toggleDrawer }) {
           </ListItemIcon>
           <ListItemText primary="Calcular Planilla" />
         </ListItemButton>
+
+        <ListItemButton onClick={() => navigate("/credits/simulate")}>
+          <ListItemIcon>
+            <CalculateIcon />
+          </ListItemIcon>
+          <ListItemText primary="Simular un Credito" />
+        </ListItemButton>
+        
         <ListItemButton onClick={() => navigate("/reports/AnualReport")}>
           <ListItemIcon>
             <AnalyticsIcon />

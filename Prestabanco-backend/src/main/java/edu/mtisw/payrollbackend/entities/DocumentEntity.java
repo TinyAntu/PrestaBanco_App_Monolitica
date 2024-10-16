@@ -6,24 +6,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "docs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 
-
-public class UserEntity {
-
+public class DocumentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Long id;
 
-    private String rut;
-    private String email;
-    private String mame;
-    private String password;
-    //Id de rol 1 = Usuario, 2 = Ejecutivo, 3 = super admin
-    private Integer role;
+    @Lob
+    private byte[] file; // Almacenamiento del PDF
 
+    private String filename; // Nombre del archivo
+
+    @ManyToOne
+    @JoinColumn(name = "credit_id", nullable = false) // Llave foránea hacia Credit
+    private CreditEntity credit;
 }

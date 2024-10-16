@@ -10,6 +10,7 @@ import NotFound from './components/NotFound';
 import PaycheckList from './components/PaycheckList';
 import PaycheckCalculate from './components/PaycheckCalculate';
 import AnualReport from './components/AnualReport';
+import SimulateCredit from './components/SimulateCredit';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="/employee/edit/:id" element={<AddEditEmployee/>} />
               <Route path="/paycheck/list" element={<PaycheckList/>} />
               <Route path="/paycheck/calculate" element={<PaycheckCalculate/>} />
+              <Route path="/credits/simulate" element={<SimulateCredit/>} />
               <Route path="/reports/AnualReport" element={<AnualReport/>} />
               <Route path="/extraHours/list" element={<ExtraHoursList/>} />
               <Route path="/extraHours/add" element={<AddEditExtraHours/>} />
