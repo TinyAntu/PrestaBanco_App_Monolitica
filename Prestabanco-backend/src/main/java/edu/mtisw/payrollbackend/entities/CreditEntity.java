@@ -25,9 +25,9 @@ public class CreditEntity {
     // 1 = Primera vivienda, 2 = Segunda vivienda, 3 = Propiedades comerciles, 4 = Remodelacion
     private Integer type;
     private Integer income;
-    //El estado default es falso por que no ha sido aprobado
+    //El estado null porque debe ser rechazdo o aprovado
     @Column(nullable = false)
-    private Boolean state = false;
+    private Boolean state = null;
 
     @OneToMany(mappedBy = "credit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DocumentEntity> documents;

@@ -69,6 +69,21 @@ export default function Sidemenu({ open, toggleDrawer }) {
           </ListItemIcon>
           <ListItemText primary="Simular un Credito" />
         </ListItemButton>
+
+        <ListItemButton onClick={() => {
+            const userId = localStorage.getItem("userId");
+        if (userId) {
+          navigate(`/credits/create?userId=${userId}`);
+        } else {
+          alert("No se encontró el ID de usuario. Por favor, inicie sesión.");
+        }
+        }}>
+            <ListItemIcon>
+              <CalculateIcon />
+            </ListItemIcon>
+            <ListItemText primary="Solicitar Crédito" />
+        </ListItemButton>
+
         
         <ListItemButton onClick={() => navigate("/reports/AnualReport")}>
           <ListItemIcon>

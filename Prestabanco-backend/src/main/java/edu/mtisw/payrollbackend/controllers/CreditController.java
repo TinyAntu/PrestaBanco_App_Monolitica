@@ -3,10 +3,15 @@ import edu.mtisw.payrollbackend.entities.CreditEntity;
 import edu.mtisw.payrollbackend.entities.DocumentEntity;
 import edu.mtisw.payrollbackend.entities.UserEntity;
 import edu.mtisw.payrollbackend.services.CreditService;
+import edu.mtisw.payrollbackend.services.DocumentService;
 import edu.mtisw.payrollbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,6 +22,8 @@ public class CreditController {
     CreditService creditService;
     @Autowired
     UserService userService;
+    @Autowired
+    DocumentService documentService;
 
 
     @GetMapping("/simulate")
@@ -62,4 +69,22 @@ public class CreditController {
         var isDeleted = creditService.deleteCredit(id);
         return  ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{creditId}/uploadDocument")
+    public ResponseEntity<String> uploadDocument(@PathVariable Long creditId, @RequestParam("file") MultipartFile file) {
+        try {
+            CreditEntity credit = creditService.findById(creditId);
+            DocumentEntity document = new DocumentEntity();
+            document.setFilename(file.getOriginalFilename());
+            document.setFile(file.getBytes());
+            document.setCredit(credit);
+
+            documentService.saveDocument(document);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("Document uploaded successfully");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading document");
+        }
+    }
+
 }

@@ -26,7 +26,7 @@ public class CreditService {
 
     public List<DocumentEntity> getDocumentsByCreditId(Long creditId) {
         CreditEntity credit = creditRepository.findById(creditId)
-                .orElseThrow(() -> new RuntimeException("Crédito no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Documents Not found with the Credit ID: " + creditId));
         return credit.getDocuments();
     }
 
@@ -37,5 +37,10 @@ public class CreditService {
         } catch (Exception e){
             throw new Exception(e.getMessage());
         }
+    }
+
+    public CreditEntity findById(Long id) {
+        return creditRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Credit not found with ID: " + id));
     }
 }

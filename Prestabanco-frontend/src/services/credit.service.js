@@ -8,4 +8,13 @@ const remove = id => {
     return httpClient.delete(`/api/v1/credits/${id}`)
 }
 
-export default{simulate, remove};
+const create = (data, userId) => {
+    return httpClient.post(`/api/v1/credits/create?userId=${userId}`, data, {
+        headers: {
+            //Dar conocimiento que se mandan archivos
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
+
+export default{simulate, remove, create};

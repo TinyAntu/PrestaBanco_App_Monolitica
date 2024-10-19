@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Box,
   FormControl,
@@ -8,7 +7,7 @@ import {
   Button,
   Typography
 } from '@mui/material';
-import creditService from '../services/credit.service'; // Asegúrate de importar tu servicio de crédito
+import creditService from '../services/credit.service'; 
 
 const SimulateCredit = () => {
     const [capital, setCapital] = useState("");
@@ -16,7 +15,6 @@ const SimulateCredit = () => {
     const [years, setYears] = useState("");
     const [monthlyPayment, setMonthlyPayment] = useState(null);
   
-    const navigate = useNavigate();
   
     const simulateCredit = (e) => {
       e.preventDefault();
