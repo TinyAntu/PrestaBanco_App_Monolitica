@@ -8,10 +8,11 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Sidemenu from "./Sidemenu";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-
+  const navigate = useNavigate();
   const toggleDrawer = (open) => (event) => {
     setOpen(open);
   };
@@ -30,6 +31,13 @@ export default function Navbar() {
           >
             <MenuIcon />
           </IconButton>
+
+          <Button color="inherit"
+            onClick={() => navigate("/user/register")}
+          
+          >
+            Register
+            </Button>
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           PrestaBanco: Sitema de Creditos bancarios

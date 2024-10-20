@@ -11,6 +11,8 @@ import PaycheckList from './components/PaycheckList';
 import PaycheckCalculate from './components/PaycheckCalculate';
 import AnualReport from './components/AnualReport';
 import SimulateCredit from './components/SimulateCredit';
+import CreditApplication from './components/CreditApplication';
+import UserRegister from './components/UserRegister';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
               <Route path="/paycheck/list" element={<PaycheckList/>} />
               <Route path="/paycheck/calculate" element={<PaycheckCalculate/>} />
               <Route path="/credits/simulate" element={<SimulateCredit/>} />
+              <Route path="/credits/create?userId=${userId}" element={<CreditApplication/>} />
+              <Route path="/user/register" element={<UserRegister/>} />
               <Route path="/reports/AnualReport" element={<AnualReport/>} />
               <Route path="/extraHours/list" element={<ExtraHoursList/>} />
               <Route path="/extraHours/add" element={<AddEditExtraHours/>} />

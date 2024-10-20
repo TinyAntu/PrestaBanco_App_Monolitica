@@ -1,11 +1,11 @@
 import httpClient from "../http-common";
 
-const register = () => {
-    return httpClient.post("/api/v1/users/register");
+const register = (user) => {
+    return httpClient.post("/api/v1/users/register", user);
 }
 
-const login = () => {
-    return httpClient.post("/api/v1/users/login");
+const login = (credentials) => {
+    return httpClient.post("/api/v1/users/login", credentials);
 }
 
 export default { register, login };

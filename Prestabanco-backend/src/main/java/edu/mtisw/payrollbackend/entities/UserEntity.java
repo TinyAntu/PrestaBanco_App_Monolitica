@@ -21,7 +21,7 @@ public class UserEntity {
 
     private String rut;
     private String email;
-    private String mame;
+    private String name;
     private String password;
     //Id de rol 1 = Usuario, 2 = Ejecutivo, 3 = super admin
     private Integer role;
