@@ -27,10 +27,10 @@ public class CreditController {
 
 
     @GetMapping("/simulate")
-    public ResponseEntity<Double> simulateMonthlyPayment(@RequestParam("capital") int capital,
+    public ResponseEntity<Long> simulateMonthlyPayment(@RequestParam("capital") int capital,
                                                          @RequestParam("annual_interest") double interest,
                                                          @RequestParam("years") double years) {
-        Double monthlyPayment = creditService.montly_Share(capital, interest, years);
+        Long monthlyPayment = creditService.montly_Share(capital, interest, years);
         return ResponseEntity.ok(monthlyPayment); // Devuelve el cálculo de la cuota mensual
     }
 

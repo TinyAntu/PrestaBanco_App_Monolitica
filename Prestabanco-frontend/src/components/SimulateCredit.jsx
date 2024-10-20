@@ -3,19 +3,17 @@ import {
   Box,
   FormControl,
   TextField,
-  MenuItem,
   Button,
   Typography
 } from '@mui/material';
-import creditService from '../services/credit.service'; 
+import creditService from '../services/credit.service';
 
 const SimulateCredit = () => {
     const [capital, setCapital] = useState("");
     const [interest, setInterest] = useState("");
     const [years, setYears] = useState("");
     const [monthlyPayment, setMonthlyPayment] = useState(null);
-  
-  
+
     const simulateCredit = (e) => {
       e.preventDefault();
       console.log("Solicitar simulación de crédito.", capital, "-", interest, "-", years);
@@ -23,14 +21,14 @@ const SimulateCredit = () => {
         .simulate(capital, interest, years)
         .then(response => {
           console.log("Resultado de la simulación:", response.data);
-          setMonthlyPayment(`La cuota mensual es: ${response.data}`);
+          setMonthlyPayment(`La cuota mensual es aproximadamente: ${response.data} pesos`);
         })
         .catch(error => {
           console.error("Error al realizar la simulación:", error);
           setMonthlyPayment("Error al realizar la simulación. Intenta de nuevo.");
         });
     };
-  
+
     return (
       <Box
         display="flex"
@@ -40,40 +38,49 @@ const SimulateCredit = () => {
         component="form"
         onSubmit={simulateCredit}
       >
-        <Typography variant="h5">Simulación de Crédito</Typography>
-        <FormControl fullWidth margin="normal">
+        <Typography variant="h4" sx={{ 
+          marginTop: '30px', // Increase this value to move the text lower
+          marginBottom: '20px', // Space below the title
+          textAlign: 'center', // Center the text
+        }}>Simulación de Crédito
+        </Typography>
+
+        <FormControl  margin="normal">
           <TextField
             id="capital"
             label="Capital"
             type="number"
             value={capital}
             variant="outlined"
+            sx={{ width: '650px'  }}
             onChange={(e) => setCapital(e.target.value)}
           />
         </FormControl>
-  
-        <FormControl fullWidth margin="normal">
+
+        <FormControl  margin="normal">
           <TextField
             id="interest"
             label="Interés Anual (%)"
             type="number"
             value={interest}
             variant="outlined"
+            sx={{ width: '650px' }}
             onChange={(e) => setInterest(e.target.value)}
           />
         </FormControl>
-  
-        <FormControl fullWidth margin="normal">
+
+        <FormControl  margin="normal">
           <TextField
             id="years"
             label="Años"
             type="number"
             value={years}
             variant="outlined"
+            sx={{ width: '650px' }}
             onChange={(e) => setYears(e.target.value)}
           />
         </FormControl>
-  
+
         <Button
           variant="contained"
           color="primary"
@@ -82,7 +89,7 @@ const SimulateCredit = () => {
         >
           Simular Crédito
         </Button>
-  
+
         {monthlyPayment && (
           <Typography variant="h6" style={{ marginTop: "1rem" }}>
             {monthlyPayment}
@@ -90,6 +97,6 @@ const SimulateCredit = () => {
         )}
       </Box>
     );
-  };
-  
-  export default SimulateCredit;
+};
+
+export default SimulateCredit;

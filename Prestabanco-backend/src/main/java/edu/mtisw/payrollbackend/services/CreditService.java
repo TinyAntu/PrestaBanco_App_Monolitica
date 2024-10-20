@@ -16,12 +16,12 @@ public class CreditService {
         return creditRepository.save(credit);
     }
     //Descripcion: Realiza el calculo de la cuota mensual del prestamo
-    public Double montly_Share(Integer Capital, Double Annual_interest, Double Years){
+    public Long montly_Share(Integer Capital, Double Annual_interest, Double Years){
         Double M = 0.0;
-        Double Montly_interest = Annual_interest/12/100;
-        Double Total_payments = Years*12;
-        M = Capital*(Montly_interest*(Math.pow(1+Montly_interest,Total_payments)))/Math.pow(1+Montly_interest, Total_payments)-1;
-        return M;
+        Double r = Annual_interest/100/12;
+        Double n = Years*12;
+        M = Capital*r* Math.pow(1+r,n) / (Math.pow(1 + r, n) -1);
+        return Math.round(M);
     }
 
     public List<DocumentEntity> getDocumentsByCreditId(Long creditId) {
