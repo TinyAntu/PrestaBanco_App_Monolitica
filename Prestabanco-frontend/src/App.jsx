@@ -9,7 +9,6 @@ import AddEditExtraHours from './components/AddEditExtraHours';
 import NotFound from './components/NotFound';
 import PaycheckList from './components/PaycheckList';
 import PaycheckCalculate from './components/PaycheckCalculate';
-import AnualReport from './components/AnualReport';
 import SimulateCredit from './components/SimulateCredit';
 import CreditApplication from './components/CreditApplication';
 import UserRegister from './components/UserRegister';
@@ -31,7 +30,7 @@ function App() {
               <Route path="/credits/create?userId=${userId}" element={<CreditApplication/>} />
               <Route path="/user/register" element={<UserRegister/>} />
               <Route path="/user/login" element={<UserLogin/>} />
-              <Route path="/reports/AnualReport" element={<AnualReport/>} />
+              <Route path="/credits/create/:userId" element={<CreditApplication />} />
               <Route path="/extraHours/list" element={<ExtraHoursList/>} />
               <Route path="/extraHours/add" element={<AddEditExtraHours/>} />
               <Route path="/extraHours/edit/:id" element={<AddEditExtraHours/>} />
