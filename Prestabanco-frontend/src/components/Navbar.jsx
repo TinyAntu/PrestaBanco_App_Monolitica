@@ -42,7 +42,12 @@ export default function Navbar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           PrestaBanco: Sitema de Creditos bancarios
           </Typography>
-          <Button color="inherit">Login</Button>
+          <Button color="inherit"
+            onClick={() => navigate("/user/login")}
+          
+          > 
+            Login
+            </Button>
         </Toolbar>
       </AppBar>
 

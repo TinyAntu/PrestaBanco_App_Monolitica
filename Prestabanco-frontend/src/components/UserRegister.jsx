@@ -1,6 +1,7 @@
 import { useState } from "react";
 import userService from "../services/user.service";
 import { Box, Typography, FormControl, TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const UserRegister = () => {
   const [rut, setRut] = useState("");
@@ -9,6 +10,7 @@ const UserRegister = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(false);
 
+  const navigate = useNavigate();
   const saveUser = (e) => {
     e.preventDefault();
     const userRole = role ? 2 : 1; // 2 para "Ejecutivo", 1 para "Normal"
@@ -23,6 +25,8 @@ const UserRegister = () => {
         localStorage.setItem("userId", userId);
         localStorage.setItem("userTypeId", userRole);
         console.log("API Response:", response);
+        alert("Usuario registrado correctamente");
+        navigate("/home");
       })
       .catch((error) => {
         console.error("Error al registrar el usuario", error);
