@@ -15,6 +15,7 @@ public class CreditService {
     public CreditEntity saveCredit(CreditEntity credit) {
         return creditRepository.save(credit);
     }
+
     //Descripcion: Realiza el calculo de la cuota mensual del prestamo
     public Long montly_Share(Integer Capital, Double Annual_interest, Double Years){
         Double M = 0.0;
@@ -43,4 +44,9 @@ public class CreditService {
         return creditRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Credit not found with ID: " + id));
     }
+
+    public List<CreditEntity> getCredits(Long id){
+        return creditRepository.findByUserId(id);
+    }
+
 }

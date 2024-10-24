@@ -16,8 +16,8 @@ const UserLogin = () => {
       .login(user)
       .then((response) => {
         console.log("Usuario autenticado exitosamente", response.data);
-        //Para verificaciones y relaciones
-        localStorage.setItem("userId", response.data.id);
+        // Store userId as a number in localStorage
+        localStorage.setItem("userId", Number(response.data.id)); // Convert to number
         localStorage.setItem("userTypeId", response.data.userTypeId);
         navigate("/home"); 
       })
@@ -78,3 +78,4 @@ const UserLogin = () => {
 };
 
 export default UserLogin;
+

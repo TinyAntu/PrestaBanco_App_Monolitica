@@ -1,5 +1,6 @@
 package edu.mtisw.payrollbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,9 +26,11 @@ public class CreditEntity {
     // 1 = Primera vivienda, 2 = Segunda vivienda, 3 = Propiedades comerciles, 4 = Remodelacion
     private Integer type;
     private Integer income;
-    //El estado null porque debe ser rechazdo o aprovado
-    @Column(nullable = false)
+    //El estado null porque debe ser rechazado o aprovado
+    @Column
     private Boolean state = null;
+
+    private Integer level;
 
     @OneToMany(mappedBy = "credit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DocumentEntity> documents;

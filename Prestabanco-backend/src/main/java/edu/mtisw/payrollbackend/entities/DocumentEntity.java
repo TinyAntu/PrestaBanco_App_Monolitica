@@ -20,9 +20,10 @@ public class DocumentEntity {
     @Lob
     private byte[] file; // Almacenamiento del PDF
 
+    private String doc_type;
+
     private String filename; // Nombre del archivo
 
-    @ManyToOne
-    @JoinColumn(name = "credit_id", nullable = false) // Llave foránea hacia Credit
-    private CreditEntity credit;
+    //De que credito provienen
+    private Long id_credit;
 }

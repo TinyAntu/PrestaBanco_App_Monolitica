@@ -1,9 +1,12 @@
 package edu.mtisw.payrollbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -25,5 +28,6 @@ public class UserEntity {
     private String password;
     //Id de rol 1 = Usuario, 2 = Ejecutivo, 3 = super admin
     private Integer role;
+
 
 }

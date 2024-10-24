@@ -35,7 +35,7 @@ public class UserService {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Contraseña incorrecta");
             }
         } else {
-            
+
             System.out.println("User not found for Rut: " + Rut);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
         }

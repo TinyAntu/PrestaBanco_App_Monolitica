@@ -8,4 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/docs")
 @CrossOrigin("*")
 public class DocumentController {
+
+
 }

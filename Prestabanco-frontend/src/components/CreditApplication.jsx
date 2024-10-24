@@ -1,35 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+
 import creditService from '../services/credit.service';
 import { Box, Typography, FormControl, TextField, Button, MenuItem } from "@mui/material";
 
 const CreditApplication = () => {
-    const { userId } = useParams();
+    const [userId, setUserId] = useState(null);
+    console.log("User ID:", userId);
     const [capital, setCapital] = useState("");
     const [annualInterest, setAnnualInterest] = useState("");
     const [years, setYears] = useState("");
     const [type, setType] = useState("");
     const [income, setIncome] = useState("");
-    const [documents, setDocuments] = useState([]);
+    const [documents, setDocuments] = useState(null);
 
-    //Para el tipo de credito
-    const handleCreditype = (event) =>{
+    useEffect(() => {
+        const storedUserId = localStorage.getItem("userId");
+        setUserId(storedUserId ? Number(storedUserId) : null); // Retrieve and convert to number
+    }, []);
+
+    const handleCreditype = (event) => {
         setType(event.target.value);
-        //Borrar el interez cuando desee cambiar el tipo
         setAnnualInterest("");
+        setDocuments({}); // Reset documents when changing credit type
     };
 
-    //Limites de intereses en base al texto
-    const getInterestLimits = () =>{
-        switch (type){
+    const getInterestLimits = () => {
+        switch (type) {
             case "1":
-                return { min: 3.5, max: 5}; //Primera vivienda
+                return { min: 3.5, max: 5 }; // First home
             case "2":
-                return { min: 4, max: 6}; //Segunda vivienda
+                return { min: 4, max: 6 }; // Second home
             case "3":
-                return { min: 5, max: 7}; //Propiedades comerciales
+                return { min: 5, max: 7 }; // Commercial properties
             case "4":
-                return { min:4.5, max: 6}; //Remodelacion
+                return { min: 4.5, max: 6 }; // Remodeling
             default:
                 return { min: 0, max: 0 };
         }
@@ -37,12 +42,11 @@ const CreditApplication = () => {
 
     const interestLimits = getInterestLimits();
 
-     // Carga de documentos
-     const handleDocuments = (event) => {
-        setDocuments(event.target.files);
+    const handleDocumentChange = (e, docType) => {
+        const file = e.target.files[0]; // Get the first selected file
+        setDocuments((prevDocs) => ({ ...prevDocs, [docType]: file }));
     };
 
-    // Manejar el envío del formulario
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -58,30 +62,27 @@ const CreditApplication = () => {
         formData.append("years", years);
         formData.append("type", type);
         formData.append("income", income);
-        
-        // Agregar cada archivo PDF al FormData
-        for (let i = 0; i < documents.length; i++) {
-            formData.append("documents", documents[i]);
-        }
+        formData.append("userId", userId); 
 
-        creditService
-            .create(formData, userId)
-            .then((response) => {
-                console.log("Crédito creado:", response.data);
-                alert("Crédito creado exitosamente.");
-            })
-            .catch((error) => {
-                console.error("Error al crear el crédito:", error);
-                alert("Error al crear el crédito. Intenta de nuevo.");
-            });
-        // Aquí deberías llamar a la función para crear el crédito, pasando `formData` como datos.
-        // Por ejemplo: await create(formData, userId);
+        Object.entries(documents).forEach(([docType, file]) => {
+            formData.append("documents", file); // Append the file
+            formData.append("doc_types", docType); // Append the corresponding document type
+        });
+
+        try {
+            const response = await creditService.create(formData);
+            console.log("Crédito creado:", response.data);
+            alert("Crédito creado exitosamente.");
+        } catch (error) {
+            console.error("Error al crear el crédito:", error);
+            alert("Error al crear el crédito. Intenta de nuevo.");
+        }
     };
 
     const handleAnnualInterestChange = (e) => {
         const value = e.target.value;
         const floatValue = parseFloat(value);
-        
+
         // Check if the value is a number and within limits
         if (!isNaN(floatValue) && (floatValue >= interestLimits.min && floatValue <= interestLimits.max)) {
             setAnnualInterest(value);
@@ -93,7 +94,6 @@ const CreditApplication = () => {
             alert(`La tasa de interés debe estar entre ${interestLimits.min} y ${interestLimits.max}.`);
         }
     };
-    
 
     return (
         <Box
@@ -174,15 +174,136 @@ const CreditApplication = () => {
                         />
                     </FormControl>
 
-                    <FormControl fullWidth>
-                        <input
-                            type="file"
-                            multiple
-                            accept=".pdf"
-                            onChange={handleDocuments}
-                            style={{ margin: '16px 0' }}
-                        />
-                    </FormControl>
+                    {/* Campos de carga de documentos basados en el tipo de crédito */}    
+                    {/* Primera vivienda */}          
+                    {type === "1" && (
+                        <>
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'comprobante_ingresos')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Comprobante de Ingresos</Typography>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'certificado_avaluo')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Certificado de avaluo</Typography>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'historial_credito')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Historial de crediticio</Typography>
+                        </>
+                    )}
+                    {/* Segunda vivienda */}  
+                    {type === "2" && (
+                        <>
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'comprobante_ingresos')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Comprobante de ingresos</Typography>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'certificado_avaluo')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Certificado de avaluo</Typography>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'escritura_primera_vivienda')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Escritura de la primera vivienda</Typography>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'historial_credito')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Historial de crediticio</Typography>
+                        </>
+                    )}
+                    {/* Propiedades comerciales */}  
+                    {type === "3" && (
+                        <>
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'estado_financiero')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Estado financiero del negocio</Typography>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'comprobante_ingresos')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Comprobantes de ingresos</Typography>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'certificado_avaluo')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Certificado de avaluo</Typography>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'plan_negocio')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Plan de negocios</Typography>
+                        </>
+                    )}
+
+                    {/* Remodelacion */}  
+                    {type === "4" && (
+                        <>
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'comprobante_ingresos')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Comprobante de ingresos</Typography>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'presupuesto_remodelacion')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Presupuesto de la remodelacion</Typography>
+
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={(e) => handleDocumentChange(e, 'certificado_avaluo')}
+                                style={{ margin: '16px 0' }}
+                            />
+                            <Typography>Certificado del avaluo actualizado</Typography>
+                        </>
+                    )}
 
                     <FormControl>
                         <Button
