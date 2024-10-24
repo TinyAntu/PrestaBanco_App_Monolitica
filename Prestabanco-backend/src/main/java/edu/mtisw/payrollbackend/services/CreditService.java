@@ -12,6 +12,7 @@ public class CreditService {
     CreditRepository creditRepository;
 
 
+
     public CreditEntity saveCredit(CreditEntity credit) {
         return creditRepository.save(credit);
     }
@@ -25,11 +26,57 @@ public class CreditService {
         return Math.round(M);
     }
 
-    public List<DocumentEntity> getDocumentsByCreditId(Long creditId) {
-        CreditEntity credit = creditRepository.findById(creditId)
-                .orElseThrow(() -> new RuntimeException("Documents Not found with the Credit ID: " + creditId));
-        return credit.getDocuments();
+    public Boolean share_income(Long share, Integer income){
+        Long relation = (share/income)*100;
+        return relation <= 35;
     }
+
+    public void R1(Long id){
+        CreditEntity Credit = creditRepository.findByIdCredit(id);
+        Long Share = montly_Share(Credit.getCapital(), Credit.getAnnual_interest(), Credit.getYears());
+        if(share_income(Share, Credit.getIncome())){
+            //Pasa a a la siguiente fase
+            Credit.setLevel(2);
+        }else{
+            //Se rechaza la peticion
+            Credit.setState(false);
+        }
+    }
+
+    public Integer financing(Integer value, Integer amount ){
+        return  (value/amount)*100;
+    }
+
+    public void R5(Long id){
+        CreditEntity Credit = creditRepository.findByIdCredit(id);
+        Integer Credit_type = Credit.getType();
+        Integer Financing = financing(Credit.getProperty_value(), Credit.getAmount());
+        if(Credit_type == 1 && Financing <= 80 ){
+            Credit.setLevel(5);
+        }else {
+            Credit.setState(false);
+        }
+
+        if(Credit_type == 2 && Financing <= 70 ){
+            Credit.setLevel(5);
+        }else {
+            Credit.setState(false);
+        }
+
+        if(Credit_type == 3 && Financing <= 60 ){
+            Credit.setLevel(5);
+        }else {
+            Credit.setState(false);
+        }
+
+
+        if(Credit_type == 4 && Financing <= 50 ){
+            Credit.setLevel(5);
+        }else {
+            Credit.setState(false);
+        }
+    }
+
 
     public boolean deleteCredit(Long id) throws Exception{
         try{
@@ -40,13 +87,12 @@ public class CreditService {
         }
     }
 
-    public CreditEntity findById(Long id) {
-        return creditRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Credit not found with ID: " + id));
-    }
-
     public List<CreditEntity> getCredits(Long id){
         return creditRepository.findByUserId(id);
+    }
+
+    public CreditEntity updateCredit(CreditEntity credit){
+        return creditRepository.save(credit);
     }
 
 }

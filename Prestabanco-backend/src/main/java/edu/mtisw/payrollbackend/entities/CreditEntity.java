@@ -18,7 +18,7 @@ public class CreditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Long id;
+    private Long idCredit;
 
     private Integer capital;
     private Double annual_interest;
@@ -32,11 +32,12 @@ public class CreditEntity {
 
     private Integer level;
 
-    @OneToMany(mappedBy = "credit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<DocumentEntity> documents;
+    private Integer property_value;
+
+    private Integer amount;
+
+    private Integer debt;
 
     //Un credito debe tener su usario
-    @ManyToOne
-    @JoinColumn(name ="user_id", nullable = false)
-    private UserEntity user;
+    private Long userId;
 }

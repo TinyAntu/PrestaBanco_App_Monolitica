@@ -25,5 +25,5 @@ public class DocumentEntity {
     private String filename; // Nombre del archivo
 
     //De que credito provienen
-    private Long id_credit;
+    private Long idCredit;
 }
