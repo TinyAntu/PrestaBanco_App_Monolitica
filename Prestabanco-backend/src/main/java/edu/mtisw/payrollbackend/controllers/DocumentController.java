@@ -17,7 +17,7 @@ public class DocumentController {
     @Autowired
     DocumentService documentService;
 
-    @GetMapping("/Documentlist/{id}")
+    @GetMapping("/documentlist/{id}")
     public ResponseEntity<List<DocumentEntity>> listDocuments(@PathVariable Long id){
         List<DocumentEntity> Docs = documentService.getDocuments(id);
         return ResponseEntity.ok(Docs);

@@ -12,8 +12,21 @@ public class CreditService {
     CreditRepository creditRepository;
 
 
-
-    public CreditEntity saveCredit(CreditEntity credit) {
+    //Crear un credito con los datos del front end
+    public CreditEntity saveCredit(Integer capital, Double annual_interest, Double years, Integer type,
+                                   Integer income, Integer property_value, Integer amount, Integer debt, Long userId) {
+        CreditEntity credit = CreditEntity.builder()
+                .capital(capital)
+                .annual_interest(annual_interest)
+                .years(years)
+                .type(type)
+                .income(income)
+                .property_value(property_value)
+                .amount(amount)
+                .debt(debt)
+                .userId(userId)
+                .build();
+        credit.setLevel(1);
         return creditRepository.save(credit);
     }
 

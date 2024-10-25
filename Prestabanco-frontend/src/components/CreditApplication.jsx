@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
 import creditService from '../services/credit.service';
+import documentService from '../services/document.service';
 import { Box, Typography, FormControl, TextField, Button, MenuItem } from "@mui/material";
 
 const CreditApplication = () => {
     const [userId, setUserId] = useState(null);
     console.log("User ID:", userId);
     const [capital, setCapital] = useState("");
-    const [annualInterest, setAnnualInterest] = useState("");
+    const [annual_interest, setAnnualInterest] = useState("");
     const [years, setYears] = useState("");
     const [type, setType] = useState("");
     const [income, setIncome] = useState("");
-    const [documents, setDocuments] = useState(null);
+    const [property_value, setPropertyValue] = useState("");
+    const [amount, setAmount] = useState("");
+    const [debt, setDebt] = useState("");
+    const [documents, setDocuments] = useState({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         const storedUserId = localStorage.getItem("userId");
@@ -43,38 +47,66 @@ const CreditApplication = () => {
     const interestLimits = getInterestLimits();
 
     const handleDocumentChange = (e, docType) => {
-        const file = e.target.files[0]; // Get the first selected file
-        setDocuments((prevDocs) => ({ ...prevDocs, [docType]: file }));
+        const file = e.target.files[0]; // Obtener el archivo seleccionado
+        const reader = new FileReader();
+    
+        reader.onloadend = () => {
+            const base64File = reader.result.split(',')[1]; // Convertir a base64 y eliminar el encabezado
+            setDocuments((prevDocs) => ({ 
+                ...prevDocs, 
+                [docType]: { file: base64File, doc_type: docType, filename: file.name } 
+            }));
+        };
+    
+        reader.readAsDataURL(file); // Leer el archivo como Data URL para convertirlo a base64
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const interest = parseFloat(annualInterest);
+        const interest = parseFloat(annual_interest);
         if (interest < interestLimits.min || interest > interestLimits.max) {
             alert(`La tasa de interés debe estar entre ${interestLimits.min} y ${interestLimits.max}.`);
             return; // Stop submission if the interest is out of range
         }
 
-        const formData = new FormData();
-        formData.append("capital", capital);
-        formData.append("annual_interest", annualInterest);
-        formData.append("years", years);
-        formData.append("type", type);
-        formData.append("income", income);
-        formData.append("userId", userId); 
-
-        Object.entries(documents).forEach(([docType, file]) => {
-            formData.append("documents", file); // Append the file
-            formData.append("doc_types", docType); // Append the corresponding document type
-        });
-
         try {
-            const response = await creditService.create(formData);
-            console.log("Crédito creado:", response.data);
-            alert("Crédito creado exitosamente.");
+            // Crear el crédito primero
+            const creditResponse = await creditService.create({
+                capital, annual_interest, years, type, income, userId, property_value, amount, debt
+            });
+            console.log("Datos a enviar:", {
+                capital, 
+                annual_interest, 
+                years, 
+                type, 
+                income, 
+                userId, 
+                property_value, 
+                amount, 
+                debt
+            });
+
+            //Guardar la id del credito
+            const creditId = creditResponse.data.idCredit;
+            console.log("Crédito creado:", creditResponse.data);
+
+            // Iterar sobre los documentos y subir cada uno como JSON
+            const documentPromises = Object.values(documents).map((doc) => {
+                const documentData = {
+                    file: doc.file,
+                    doc_type: doc.doc_type,
+                    filename: doc.filename,
+                    idCredit: creditId
+                };
+                return documentService.create(documentData);
+            });
+            await Promise.all(documentPromises);
+
+            alert("Crédito y documentos subidos exitosamente.");
+            navigate("/home"); 
         } catch (error) {
-            console.error("Error al crear el crédito:", error);
+            console.error("Error al crear el crédito o documentos:", error);
             alert("Error al crear el crédito. Intenta de nuevo.");
         }
     };
@@ -143,7 +175,7 @@ const CreditApplication = () => {
                             id="annualInterest"
                             label="Tasa de interés anual (%)"
                             type="number"
-                            value={annualInterest}
+                            value={annual_interest}
                             variant="standard"
                             onChange={handleAnnualInterestChange}
                             placeholder={`Entre ${interestLimits.min} y ${interestLimits.max}`}
@@ -171,6 +203,36 @@ const CreditApplication = () => {
                             value={income}
                             variant="standard"
                             onChange={(e) => setIncome(e.target.value)}
+                        />
+                    </FormControl>
+
+                    <FormControl fullWidth>
+                        <TextField
+                            label="Valor de la propiedad"
+                            type="number"
+                            value={property_value}
+                            variant="standard"
+                            onChange={(e) => setPropertyValue(e.target.value)}
+                        />
+                    </FormControl>
+
+                    <FormControl fullWidth>
+                        <TextField
+                            label="Cantidad de prestamo"
+                            type="number"
+                            value={amount}
+                            variant="standard"
+                            onChange={(e) => setAmount(e.target.value)}
+                        />
+                    </FormControl>
+
+                    <FormControl fullWidth>
+                        <TextField
+                            label="Deudas actuales"
+                            type="number"
+                            value={debt}
+                            variant="standard"
+                            onChange={(e) => setDebt(e.target.value)}
                         />
                     </FormControl>
 

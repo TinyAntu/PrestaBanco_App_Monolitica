@@ -27,6 +27,13 @@ public class CreditController {
     @Autowired
     DocumentService documentService;
 
+    @PostMapping("/create")
+    public ResponseEntity<CreditEntity> saveCredit(@RequestBody CreditEntity credit){
+        CreditEntity Credit = creditService.saveCredit(credit.getCapital(), credit.getAnnual_interest(), credit.getYears(),
+                credit.getType(), credit.getIncome(), credit.getProperty_value(), credit.getAmount(), credit.getDebt(), credit.getUserId());
+        return ResponseEntity.ok(Credit);
+    }
+
 
     @GetMapping("/simulate")
     public ResponseEntity<Long> simulateMonthlyPayment(@RequestParam("capital") int capital,

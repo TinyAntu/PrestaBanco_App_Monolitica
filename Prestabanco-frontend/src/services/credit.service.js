@@ -17,8 +17,7 @@ const remove = (id) => {
 const create = (data, userId) => {
     return httpClient.post(`/api/v1/credits/create?userId=${userId}`, data, {
         headers: {
-            //Dar conocimiento que se mandan archivos
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json', // Usar 'application/json' para enviar el objeto JSON
         },
     });
 };

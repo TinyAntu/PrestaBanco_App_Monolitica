@@ -19,6 +19,7 @@ const UserLogin = () => {
         // Store userId as a number in localStorage
         localStorage.setItem("userId", Number(response.data.id)); // Convert to number
         localStorage.setItem("userTypeId", response.data.userTypeId);
+        alert("Inicio de sesion correcto");
         navigate("/home"); 
       })
       .catch((error) => {
