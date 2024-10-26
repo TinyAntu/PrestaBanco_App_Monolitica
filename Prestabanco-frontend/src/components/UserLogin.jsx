@@ -17,8 +17,9 @@ const UserLogin = () => {
       .then((response) => {
         console.log("Usuario autenticado exitosamente", response.data);
         // Store userId as a number in localStorage
-        localStorage.setItem("userId", Number(response.data.id)); // Convert to number
-        localStorage.setItem("userTypeId", response.data.userTypeId);
+        localStorage.setItem("userId", Number(response.data.id));
+        localStorage.setItem("userTypeId", Number(response.data.role));
+        console.log("API Response:", response.data.role);
         alert("Inicio de sesion correcto");
         navigate("/home"); 
       })

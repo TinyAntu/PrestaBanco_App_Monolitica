@@ -22,4 +22,17 @@ const create = (data, userId) => {
     });
 };
 
-export default{simulate, remove, create};
+const getAll = () => {
+    return httpClient.get('/api/v1/credits/getAll');
+}
+
+const evaluateStep1 = (creditId) => {
+    return httpClient.get(`/api/v1/credits/R1/${creditId}`);
+  };
+
+  const update = (id, creditData) => {
+    return httpClient.put(`/api/v1/credits/update/${id}`, creditData);
+};
+
+
+export default{simulate, remove, create, getAll, evaluateStep1, update};

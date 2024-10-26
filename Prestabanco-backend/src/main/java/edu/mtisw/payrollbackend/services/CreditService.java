@@ -2,6 +2,7 @@ package edu.mtisw.payrollbackend.services;
 import edu.mtisw.payrollbackend.entities.CreditEntity;
 import edu.mtisw.payrollbackend.entities.DocumentEntity;
 import edu.mtisw.payrollbackend.repositories.CreditRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -44,15 +45,17 @@ public class CreditService {
         return relation <= 35;
     }
 
-    public void R1(Long id){
+    public Boolean R1(Long id){
         CreditEntity Credit = creditRepository.findByIdCredit(id);
         Long Share = montly_Share(Credit.getCapital(), Credit.getAnnual_interest(), Credit.getYears());
         if(share_income(Share, Credit.getIncome())){
-            //Pasa a a la siguiente fase
-            Credit.setLevel(2);
+            //Se cumple la condicion
+            return true;
         }else{
             //Se rechaza la peticion
             Credit.setState(false);
+            //No se cumple la condicion
+            return false;
         }
     }
 
@@ -104,8 +107,21 @@ public class CreditService {
         return creditRepository.findByUserId(id);
     }
 
-    public CreditEntity updateCredit(CreditEntity credit){
+    public CreditEntity updateCredit(Long id, CreditEntity credit) {
+        // Check if the credit exists
+        if (!creditRepository.existsById(id)) {
+            throw new EntityNotFoundException("Credit not found with ID: " + id);
+        }
+
+        // Set the ID of the credit to be updated
+        credit.setIdCredit(id);
+
+        // Save and return the updated credit entity
         return creditRepository.save(credit);
+    }
+
+    public List<CreditEntity> getCredits(){
+        return creditRepository.findAll();
     }
 
 }

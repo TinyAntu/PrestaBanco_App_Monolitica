@@ -57,10 +57,21 @@ public class CreditController {
         return  ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/change")
-    public ResponseEntity<CreditEntity> updateCredit(@RequestBody CreditEntity credit){
-        CreditEntity update = creditService.updateCredit(credit);
-        return ResponseEntity.ok(update);
+    @GetMapping("/getAll")
+    public  ResponseEntity<List<CreditEntity>> getAllCredits(){
+        List<CreditEntity> Credits = creditService.getCredits();
+        return ResponseEntity.ok(Credits);
     }
 
+    @GetMapping("/R1/{id}")
+    public ResponseEntity<Boolean> Step1(@PathVariable Long id){
+        Boolean R1 = creditService.R1(id);
+        return ResponseEntity.ok(R1);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<CreditEntity> updateCredite( @PathVariable Long id,@RequestBody CreditEntity Credit){
+        CreditEntity uptodatecredit = creditService.updateCredit(id, Credit);
+        return  ResponseEntity.ok(uptodatecredit);
+    }
 }

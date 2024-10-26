@@ -70,6 +70,13 @@ export default function Sidemenu({ open, toggleDrawer }) {
           <ListItemText primary="Simular un Credito" />
         </ListItemButton>
 
+        <ListItemButton onClick={() => navigate("/credits/getAll")}>
+          <ListItemIcon>
+            <CalculateIcon />
+          </ListItemIcon>
+          <ListItemText primary="Evaluar creditos" />
+        </ListItemButton>
+
         <ListItemButton onClick={() => {
             const userId = localStorage.getItem("userId");
             if (userId) {
