@@ -28,6 +28,7 @@ public class CreditService {
                 .userId(userId)
                 .build();
         credit.setLevel(1);
+        credit.setE(1);
         return creditRepository.save(credit);
     }
 

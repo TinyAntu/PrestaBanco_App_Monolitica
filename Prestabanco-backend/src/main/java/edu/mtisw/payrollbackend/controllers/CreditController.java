@@ -63,6 +63,12 @@ public class CreditController {
         return ResponseEntity.ok(Credits);
     }
 
+    @GetMapping("getAll/{id}")
+    public ResponseEntity<List<CreditEntity>> getAllCreditsById(@PathVariable Long id){
+        List<CreditEntity> Credits = creditService.getCredits(id);
+        return ResponseEntity.ok(Credits);
+    }
+
     @GetMapping("/R1/{id}")
     public ResponseEntity<Boolean> Step1(@PathVariable Long id){
         Boolean R1 = creditService.R1(id);
@@ -74,4 +80,6 @@ public class CreditController {
         CreditEntity uptodatecredit = creditService.updateCredit(id, Credit);
         return  ResponseEntity.ok(uptodatecredit);
     }
+
+
 }

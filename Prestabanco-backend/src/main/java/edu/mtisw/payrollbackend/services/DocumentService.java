@@ -25,4 +25,7 @@ public class DocumentService {
         return documentRepository.findByIdCredit(id);
     }
 
+    public DocumentEntity getDocumentById(Long id) {
+        return documentRepository.findById(id).orElse(null);
+    }
 }

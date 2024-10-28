@@ -34,5 +34,9 @@ const evaluateStep1 = (creditId) => {
     return httpClient.put(`/api/v1/credits/update/${id}`, creditData);
 };
 
+const getAllById = (id) =>{
+    return httpClient.get(`/api/v1/credits/getAll/${id}`)
+}
 
-export default{simulate, remove, create, getAll, evaluateStep1, update};
+
+export default{simulate, remove, create, getAll, evaluateStep1, update, getAllById};

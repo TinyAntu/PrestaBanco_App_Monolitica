@@ -8,4 +8,14 @@ const create = (data) => {
     });
 };
 
-export default{create}
+const getDocumentsByCreditId = (creditId) => {
+    return httpClient.get(`/api/v1/docs/doclist/${creditId}`);
+};
+
+const downloadDocument = (id) => {
+    return httpClient.get(`/api/v1/docs/download/${id}`, {
+        responseType: 'blob' 
+    });
+};
+
+export default{create, getDocumentsByCreditId, downloadDocument}

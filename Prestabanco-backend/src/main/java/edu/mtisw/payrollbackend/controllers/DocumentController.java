@@ -4,6 +4,7 @@ import edu.mtisw.payrollbackend.entities.DocumentEntity;
 import edu.mtisw.payrollbackend.services.DocumentService;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class DocumentController {
     @Autowired
     DocumentService documentService;
 
-    @GetMapping("/documentlist/{id}")
+    @GetMapping("/doclist/{id}")
     public ResponseEntity<List<DocumentEntity>> listDocuments(@PathVariable Long id){
         List<DocumentEntity> Docs = documentService.getDocuments(id);
         return ResponseEntity.ok(Docs);
@@ -28,4 +29,13 @@ public class DocumentController {
         DocumentEntity Doc = documentService.saveDocument(document);
         return ResponseEntity.ok(Doc);
     }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable Long id) {
+        DocumentEntity document = documentService.getDocumentById(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getFilename() + "\"")
+                .body(document.getFile());
+    }
+
 }

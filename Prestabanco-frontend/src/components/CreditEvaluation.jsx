@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import creditService from "../services/credit.service";
+import documentService from '../services/document.service';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
 const CreditEvaluation = () => {
@@ -8,7 +9,7 @@ const CreditEvaluation = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCredit, setSelectedCredit] = useState(null);
   const [evaluationResult, setEvaluationResult] = useState(null);
-
+  const [documents, setDocuments] = useState([]);
   const navigate = useNavigate();
 
   const init = () => {
@@ -38,6 +39,32 @@ const CreditEvaluation = () => {
     }
   };
 
+  const fetchDocuments = (creditId) => {
+    documentService.getDocumentsByCreditId(creditId)
+        .then(response => {
+            setDocuments(response.data);
+        })
+        .catch(error => {
+            console.log("Error Consiguiendo los Documentos:", error);
+        });
+  };
+
+  const handleDownloadDocument = (documentId) => {
+    documentService.downloadDocument(documentId)
+      .then(response => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'document.pdf'); // Cambiar si se desea usar el nombre real del archivo
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch(error => {
+        console.log("Error al descargar el documento.", error);
+      });
+  };
+
   const handleLevelUp = () => {
     if (selectedCredit && evaluationResult === true) {
       const updatedCredit = { ...selectedCredit, level: selectedCredit.level + 1 };
@@ -53,6 +80,12 @@ const CreditEvaluation = () => {
         });
     }
   };
+
+  useEffect(() => {
+    if (selectedCredit) {
+      fetchDocuments(selectedCredit.idCredit);
+    }
+  }, [selectedCredit]);
 
   useEffect(() => {
     const userTypeId = localStorage.getItem("userTypeId");
@@ -123,7 +156,20 @@ const CreditEvaluation = () => {
                                 : "No se cumple con la condición específica para el Nivel 2."}
                         </p>
                     )}
-
+                    <div>
+                        <h4>Documentos Asociados:</h4>
+                          {documents.map(doc => (
+                          <Button
+                          key={doc.id}
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          onClick={() => handleDownloadDocument(doc.id)}
+                          >
+                            Descargar {doc.filename}
+                          </Button>
+                      ))}
+                    </div>
                     {/* Agrega más evaluaciones para otros niveles aquí */}
                 </>
             )}

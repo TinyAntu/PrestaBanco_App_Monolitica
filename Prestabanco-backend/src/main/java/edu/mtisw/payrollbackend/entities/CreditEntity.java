@@ -40,6 +40,9 @@ public class CreditEntity {
 
     private Integer debt;
 
+    //Para el siguimiento de solicitudes
+    private Integer e;
+
     //Un credito debe tener su usario
     private Long userId;
 }
