@@ -18,12 +18,12 @@ public class DocumentEntity {
     private Long id;
 
     @Lob
-    private byte[] file; // Almacenamiento del PDF
+    private byte[] file; // Pdf file
 
     private String doc_type;
 
-    private String filename; // Nombre del archivo
+    private String filename;
 
-    //De que credito provienen
+    //From where they are
     private Long idCredit;
 }

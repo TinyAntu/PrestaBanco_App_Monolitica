@@ -20,13 +20,26 @@ import { useNavigate } from "react-router-dom";
 export default function Sidemenu({ open, toggleDrawer }) {
   const navigate = useNavigate();
 
+  const isLog = () => {
+    return !!localStorage.getItem("userId");
+  };
+
+  const handleNavigation = (path) => {
+    if (isLog() || path === "/home") {
+      navigate(path);
+    } else {
+      alert("Please login to enter this section.");
+      navigate("/user/login");
+    }
+  };
+
   const listOptions = () => (
     <Box
       role="presentation"
       onClick={toggleDrawer(false)}
     >
       <List>
-        <ListItemButton onClick={() => navigate("/home")}>
+        <ListItemButton onClick={() => handleNavigation("/home")}>
           <ListItemIcon>
             <HomeIcon />
           </ListItemIcon>
@@ -35,92 +48,50 @@ export default function Sidemenu({ open, toggleDrawer }) {
 
         <Divider />
 
-        <ListItemButton onClick={() => navigate("/employee/list")}>
-          <ListItemIcon>
-            <PeopleAltIcon />
-          </ListItemIcon>
-          <ListItemText primary="Empleados" />
-        </ListItemButton>
-
-        <ListItemButton onClick={() => navigate("/extraHours/list")}>
-          <ListItemIcon>
-            <MoreTimeIcon />
-          </ListItemIcon>
-          <ListItemText primary="Horas Extra" />
-        </ListItemButton>
-
-        <ListItemButton onClick={() => navigate("/paycheck/list")}>
-          <ListItemIcon>
-            <PaidIcon />
-          </ListItemIcon>
-          <ListItemText primary="Planilla Sueldos" />
-        </ListItemButton>
-
-        <ListItemButton onClick={() => navigate("/paycheck/calculate")}>
-          <ListItemIcon>
-            <CalculateIcon />
-          </ListItemIcon>
-          <ListItemText primary="Calcular Planilla" />
-        </ListItemButton>
-
-        <ListItemButton onClick={() => navigate("/credits/simulate")}>
+        <ListItemButton onClick={() => handleNavigation("/credits/simulate")}>
           <ListItemIcon>
             <CalculateIcon />
           </ListItemIcon>
           <ListItemText primary="Simular un Credito" />
         </ListItemButton>
 
-        <ListItemButton onClick={() => navigate("/credits/getAll")}>
+        <ListItemButton
+          onClick={() => {
+            if (isLog()) {
+              const userId = localStorage.getItem("userId");
+              navigate(`/credits/create/${userId}`);
+            } else {
+              alert("Please log in to enter.");
+              navigate("/user/login");
+            }
+          }}
+        >
           <ListItemIcon>
             <CalculateIcon />
           </ListItemIcon>
-          <ListItemText primary="Evaluar creditos" />
+          <ListItemText primary="Solicitar Crédito" />
         </ListItemButton>
 
-        <ListItemButton onClick={() => {
-            const userId = localStorage.getItem("userId");
-            if (userId) {
-                navigate(`/credits/create/:userId`);
-            } else {
-                alert("No se encontró el ID de usuario. Por favor, inicie sesión.");
-            }
-        }}>
-            <ListItemIcon>
-                <CalculateIcon />
-            </ListItemIcon>
-            <ListItemText primary="Solicitar Crédito" />
-        </ListItemButton>
-
-        
-        <ListItemButton onClick={() => navigate("/reports/AnualReport")}>
+        <ListItemButton onClick={() => handleNavigation("/credits/follow")}>
           <ListItemIcon>
-            <AnalyticsIcon />
+            <PaidIcon />
           </ListItemIcon>
-          <ListItemText primary="Gráficos Planillas" />
+          <ListItemText primary="Seguimiento de solicitud" />
         </ListItemButton>
+  
       </List>
 
       <Divider />
 
       <List>
-        <ListItemButton onClick={() => navigate("/employee/discounts")}>
+        
+      <ListItemButton onClick={() => handleNavigation("/credits/getAll")}>
           <ListItemIcon>
-            <DiscountIcon />
+            <CalculateIcon />
           </ListItemIcon>
-          <ListItemText primary="Descuentos" />
+          <ListItemText primary="Evaluar creditos" />
         </ListItemButton>
-        <ListItemButton onClick={() => navigate("/paycheck/vacations")}>
-          <ListItemIcon>
-            <HailIcon />
-          </ListItemIcon>
-          <ListItemText primary="Vacaciones" />
-        </ListItemButton>
-        <ListItemButton onClick={() => navigate("/paycheck/medicalleave")}>
-          <ListItemIcon>
-            <MedicationLiquidIcon />
-          </ListItemIcon>
-          <ListItemText primary="Licencias Medicas" />
-        </ListItemButton>
+        
       </List>
     </Box>
   );

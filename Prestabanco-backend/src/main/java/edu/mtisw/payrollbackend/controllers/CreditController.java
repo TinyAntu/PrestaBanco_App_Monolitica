@@ -40,7 +40,7 @@ public class CreditController {
                                                          @RequestParam("annual_interest") double interest,
                                                          @RequestParam("years") double years) {
         Long monthlyPayment = creditService.montly_Share(capital, interest, years);
-        return ResponseEntity.ok(monthlyPayment); // Devuelve el cálculo de la cuota mensual
+        return ResponseEntity.ok(monthlyPayment); // The value of monthly payment
     }
 
 
@@ -75,11 +75,36 @@ public class CreditController {
         return ResponseEntity.ok(R1);
     }
 
+    @GetMapping("/R4/{id}")
+    public ResponseEntity<Boolean> Step4(@PathVariable Long id){
+        Boolean R4 = creditService.R4(id);
+        return ResponseEntity.ok(R4);
+    }
+
+    @GetMapping("/R5/{id}")
+    public ResponseEntity<Boolean> Step5(@PathVariable Long id){
+        Boolean R5 = creditService.R5(id);
+        return ResponseEntity.ok(R5);
+    }
+
+    @GetMapping("/R6/{id}")
+    public ResponseEntity<Boolean> Step6(@PathVariable Long id){
+        Boolean R6 = creditService.R6(id);
+        return ResponseEntity.ok(R6);
+    }
+
+    @GetMapping("/E1/{id}")
+    public ResponseEntity<Boolean> Follow1(@PathVariable Long id){
+        Boolean E1 = creditService.E1(id);
+        return ResponseEntity.ok(E1);
+    }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<CreditEntity> updateCredite( @PathVariable Long id,@RequestBody CreditEntity Credit){
         CreditEntity uptodatecredit = creditService.updateCredit(id, Credit);
         return  ResponseEntity.ok(uptodatecredit);
     }
+
 
 
 }

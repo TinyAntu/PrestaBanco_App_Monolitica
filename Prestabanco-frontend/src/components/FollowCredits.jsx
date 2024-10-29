@@ -1,40 +1,56 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import creditService from "../services/credit.service";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import documentService from '../services/document.service';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, Typography, DialogContentText, DialogTitle, TextField } from "@mui/material";
 
-function FollowCredit() {
+function FollowCredits() {
     const [userId, setUserId] = useState(null);
     const [credits, setCredits] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedCredit, setSelectedCredit] = useState(null);
     const [evaluationResult, setEvaluationResult] = useState(null);
-
-    const navigate = useNavigate();
+    const [documents, setDocuments] = useState({
+        file1: null,
+        file2: null,
+    });
 
     useEffect(() => {
         const storedUserId = localStorage.getItem("userId");
-        setUserId(storedUserId ? Number(storedUserId) : null); // Retrieve and convert to number
+        setUserId(storedUserId ? Number(storedUserId) : null);
     }, []);
+    
+    useEffect(() => {
+        if (userId) {
+            init(); // Fetch credits when userId is set
+        }
+    }, [userId]);
 
-    //Todos los creditos del usuario
     const init = () => {
+        if (!userId) return; 
         creditService
-            .getAll(userId)
+            .getAllById(userId)
             .then((response) => {
                 setCredits(response.data);
             })
             .catch((error) => {
-                console.log("Error al obtener créditos.", error);
+                console.error("Error al obtener créditos.", error);
             });
     };
 
-    const handleEvaluateClick = (credit) => {
+    const handleDocumentChange = (e, docType) => {
+        const file = e.target.files[0];
+        if (docType === 'file1') {
+            setDocuments((prev) => ({ ...prev, file1: file }));
+        } else if (docType === 'file2') {
+            setDocuments((prev) => ({ ...prev, file2: file }));
+        }
+    };
+
+    const handleFollowClick = (credit) => {
         setSelectedCredit(credit);
 
-        if (credit.level === 1) {
-            // Llamar a la función del servicio para evaluar el crédito en nivel 1
-            creditService.evaluateStep1(credit.idCredit)
+        if (credit.e === 1) {
+            creditService.follow1(credit.idCredit)
                 .then((response) => {
                     setEvaluationResult(response.data);
                     setOpenDialog(true);
@@ -42,9 +58,76 @@ function FollowCredit() {
                 .catch((error) => {
                     console.log("Error al evaluar el crédito.", error);
                 });
+        } else if (credit.e === 2) {
+            setOpenDialog(true); // Open dialog for uploading documents
         }
     };
 
+    const handleStageUp = () => {
+        if (selectedCredit && evaluationResult === true) {
+            const updatedCredit = { ...selectedCredit, e: selectedCredit.e + 1 };
+    
+            creditService.update(selectedCredit.idCredit, updatedCredit)
+                .then(() => {
+                    console.log("Etapa del credito aumentada");
+                    init();
+                    setOpenDialog(false);
+                })
+                .catch((error) => {
+                    console.log("Error al intentar incrementar la etapa del crédito.", error);
+                });
+        }
+    };
+
+    const uploadDocuments = async (creditId) => {
+        const { file1, file2 } = documents;
+
+        if (file1 && file2) {
+            const documentData1 = {
+                file: await convertToBase64(file1),
+                doc_type: 'comprobante_ingresos',
+                filename: file1.name,
+                idCredit: creditId,
+            };
+
+            const documentData2 = {
+                file: await convertToBase64(file2),
+                doc_type: 'certificado_avaluo',
+                filename: file2.name,
+                idCredit: creditId,
+            };
+
+            try {
+                await Promise.all([
+                    documentService.create(documentData1),
+                    documentService.create(documentData2),
+                ]);
+                alert("Documents uploaded successfully.");
+                setEvaluationResult(true);
+            } catch (error) {
+                console.error("Error uploading documents:", error);
+                alert("Error uploading documents. Please try again.");
+            }
+        } else {
+            alert("Please upload both documents.");
+        }
+    };
+
+    const convertToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = () => resolve(reader.result.split(',')[1]); // Base64
+            reader.onerror = reject;
+        });
+    };
+
+    const handleSubmitDocuments = () => {
+        if (selectedCredit) {
+            uploadDocuments(selectedCredit.idCredit);
+            setOpenDialog(false); // Close dialog after submission
+        }
+    };
 
     return (
         <>
@@ -75,9 +158,9 @@ function FollowCredit() {
                                         variant="contained"
                                         color="primary"
                                         size="small"
-                                        onClick={() => handleEvaluateClick(credit)}
+                                        onClick={() => handleFollowClick(credit)}
                                     >
-                                        Evaluar
+                                        Consultar
                                     </Button>
                                 </TableCell>
                             </TableRow>
@@ -87,33 +170,69 @@ function FollowCredit() {
             </TableContainer>
 
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
-                <DialogTitle>Evaluar Crédito</DialogTitle>
+                <DialogTitle>Consultar credito</DialogTitle>
                 <DialogContentText sx={{ padding: '20px' }}>
                     {selectedCredit && (
                         <>
-                            {/* Mensajes específicos según el nivel */}
-                            {selectedCredit.e === 1 && (
+                            {/* Messages specific to the evaluation result */}
+                            {evaluationResult !== null && selectedCredit.e === 1 && (
                                 <p>
-                                    {"En revision inicial"}
+                                    {evaluationResult
+                                        ? "Se completaron los campos requeridos."
+                                        : "No se completaron los campos requeridos."}
                                 </p>
                             )}
 
                             {selectedCredit.e === 2 && (
-                                <p>
-                                    {evaluationResult
-                                        ? "Se cumple con la condición específica para el Nivel 2."
-                                        : "No se cumple con la condición específica para el Nivel 2."}
-                                </p>
-                            )}
+                                <>
+                                    <TextField
+                                        type="file"
+                                        accept=".pdf"
+                                        onChange={(e) => handleDocumentChange(e, 'file1')}
+                                        style={{ margin: '16px 0' }}
+                                    />
+                                    <Typography>Comprobante de ingresos</Typography>
 
-                            {/* Agrega más evaluaciones para otros niveles aquí */}
+                                    <TextField
+                                        type="file"
+                                        accept=".pdf"
+                                        onChange={(e) => handleDocumentChange(e, 'file2')}
+                                        style={{ margin: '16px 0' }}
+                                    />
+                                    <Typography>Certificado de avalúo</Typography>
+                                </>
+                            )}
                         </>
                     )}
                 </DialogContentText>
-                
+                <DialogActions>
+                    <Button onClick={() => setOpenDialog(false)} color="secondary">
+                        Cancelar
+                    </Button>
+
+                    {selectedCredit && selectedCredit.e === 2 && (
+                        <Button
+                            onClick={handleSubmitDocuments}
+                            color="primary"
+                            variant="contained"
+                        >
+                            Subir Documentos
+                        </Button>
+                    )}
+
+                    <Button
+                        onClick={handleStageUp}
+                        color="primary"
+                        variant="contained"
+                        disabled={!evaluationResult} // Disable if evaluation condition is not met
+                    >
+                        Pasar de etapa
+                    </Button>
+                </DialogActions>          
             </Dialog>
         </>
     );
 }
 
-export default FollowCredit;
+export default FollowCredits;
+

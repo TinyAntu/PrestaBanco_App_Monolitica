@@ -28,15 +28,30 @@ const getAll = () => {
 
 const evaluateStep1 = (creditId) => {
     return httpClient.get(`/api/v1/credits/R1/${creditId}`);
-  };
+};
+
+const evaluateStep4 = (creditId) => {
+    return httpClient.get(`/api/v1/credits/R4/${creditId}`);
+};
+
+const evaluateStep5 = (creditId) => {
+    return httpClient.get(`/api/v1/credits/R5/${creditId}`);
+};
+
+const evaluateStep6 = (creditId) => {
+    return httpClient.get(`/api/v1/credits/R6/${creditId}`);
+};
 
   const update = (id, creditData) => {
     return httpClient.put(`/api/v1/credits/update/${id}`, creditData);
 };
 
-const getAllById = (id) =>{
-    return httpClient.get(`/api/v1/credits/getAll/${id}`)
-}
+const getAllById = (userId) => {
+    return httpClient.get(`/api/v1/credits/getAll/${userId}`);
+};
 
+const follow1 = (creditId) =>{
+    return httpClient.get(`/api/v1/credits/E1/${creditId}`);
+};
 
-export default{simulate, remove, create, getAll, evaluateStep1, update, getAllById};
+export default{simulate, remove, create, getAll, evaluateStep1, follow1, update, getAllById, evaluateStep4,evaluateStep5, evaluateStep6};

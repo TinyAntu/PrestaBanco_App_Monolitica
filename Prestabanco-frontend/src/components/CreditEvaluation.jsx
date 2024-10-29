@@ -27,8 +27,49 @@ const CreditEvaluation = () => {
     setSelectedCredit(credit);
 
     if (credit.level === 1) {
-      // Llamar a la función del servicio para evaluar el crédito en nivel 1
       creditService.evaluateStep1(credit.idCredit)
+        .then((response) => {
+          setEvaluationResult(response.data);
+          setOpenDialog(true);
+        })
+        .catch((error) => {
+          console.log("Error al evaluar el crédito.", error);
+        });
+    }
+    
+    if (credit.level === 2) {
+          setOpenDialog(true);
+          setEvaluationResult(true);
+    }
+    if (credit.level === 3) {
+          setOpenDialog(true);
+          setEvaluationResult(true);
+    }
+
+    if (credit.level === 4) {
+      creditService.evaluateStep4(credit.idCredit)
+        .then((response) => {
+          setEvaluationResult(response.data);
+          setOpenDialog(true);
+        })
+        .catch((error) => {
+          console.log("Error al evaluar el crédito.", error);
+        });
+    }
+
+    if (credit.level === 5) {
+      creditService.evaluateStep5(credit.idCredit)
+        .then((response) => {
+          setEvaluationResult(response.data);
+          setOpenDialog(true);
+        })
+        .catch((error) => {
+          console.log("Error al evaluar el crédito.", error);
+        });
+    }
+
+    if (credit.level === 6) {
+      creditService.evaluateStep6(credit.idCredit)
         .then((response) => {
           setEvaluationResult(response.data);
           setOpenDialog(true);
@@ -81,6 +122,38 @@ const CreditEvaluation = () => {
     }
   };
 
+  const handleReject = () =>{
+    if (selectedCredit) {
+      const updatedCredit = { ...selectedCredit, state: false };
+
+      creditService.update(selectedCredit.idCredit, updatedCredit)
+        .then(() => {
+          console.log("Crédito rechazado");
+          init();
+          setOpenDialog(false);
+        })
+        .catch((error) => {
+          console.log("Error al intentar rechazar el crédito.", error);
+        });
+    }
+  };
+
+  const handleRevision = () =>{
+    if (selectedCredit) {
+      const updatedCredit = { ...selectedCredit, state: null };
+
+      creditService.update(selectedCredit.idCredit, updatedCredit)
+        .then(() => {
+          console.log("Credito en revision");
+          init();
+          setOpenDialog(false);
+        })
+        .catch((error) => {
+          console.log("Error al intentar revisar el credito.", error);
+        });
+    }
+  };
+
   useEffect(() => {
     if (selectedCredit) {
       fetchDocuments(selectedCredit.idCredit);
@@ -107,6 +180,7 @@ const CreditEvaluation = () => {
               <TableCell align="left">Interés</TableCell>
               <TableCell align="right">Nivel</TableCell>
               <TableCell align="right">Tipo</TableCell>
+              <TableCell align="right">Etapa</TableCell>
               <TableCell align="left">Estado</TableCell>
               <TableCell align="center">Acciones</TableCell>
             </TableRow>
@@ -117,6 +191,7 @@ const CreditEvaluation = () => {
                 <TableCell align="left">{credit.amount}</TableCell>
                 <TableCell align="left">{credit.annual_interest}</TableCell>
                 <TableCell align="right">{credit.level}</TableCell>
+                <TableCell align="right">{credit.e}</TableCell>
                 <TableCell align="right">{credit.type}</TableCell>
                 <TableCell align="right">{credit.state ? "Aprobado" : credit.state === null ? "En Revisión" : "Rechazado"}</TableCell>
                 <TableCell align="center">
@@ -151,11 +226,40 @@ const CreditEvaluation = () => {
 
                     {evaluationResult !== null && selectedCredit.level === 2 && (
                         <p>
-                            {evaluationResult
-                                ? "Se cumple con la condición específica para el Nivel 2."
-                                : "No se cumple con la condición específica para el Nivel 2."}
+                            {"Determine el estado de DICOM con el historial crediticio"}
                         </p>
                     )}
+
+                    {evaluationResult !== null && selectedCredit.level === 3 && (
+                        <p>
+                            {"Determine la estabilidad laboral con el documento pertinente"}
+                        </p>
+                    )}
+
+                    {evaluationResult !== null && selectedCredit.level === 4 && (
+                        <p>
+                            {evaluationResult
+                                ? "Se cumple con el requerimiento de suma de deudas es menor al 50% de los ingresos."
+                                : "La suma de las deudas excede el 50% del ingresos."}
+                        </p>
+                    )}
+
+                    {evaluationResult !== null && selectedCredit.level === 5 && (
+                        <p>
+                            {evaluationResult
+                                ? "El monto de financiamineto no excede el maximo designado para el tipo de credito."
+                                : "El monto de financiamineto excede el maximo designado para el tipo de credito."}
+                        </p>
+                    )}
+
+                    {evaluationResult !== null && selectedCredit.level === 6 && (
+                        <p>
+                            {evaluationResult
+                                ? "No se encuentra cerca a la edad maxima '75 años'."
+                                : "Se encuentra muy cercano a la edad maxima '75 años'."}
+                        </p>
+                    )}
+
                     <div>
                         <h4>Documentos Asociados:</h4>
                           {documents.map(doc => (
@@ -187,6 +291,23 @@ const CreditEvaluation = () => {
           >
             Incrementar Nivel
           </Button>
+
+          <Button
+            onClick={handleReject}
+            color="primary"
+            variant="contained"
+          >
+            Rechazar
+          </Button>
+
+          <Button
+            onClick={handleRevision}
+            color="primary"
+            variant="contained"
+          >
+            En revision
+          </Button>
+
         </DialogActions>
       </Dialog>
     </>

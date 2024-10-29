@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,8 +27,10 @@ public class UserEntity {
     private String email;
     private String name;
     private String password;
-    //Id de rol 1 = Usuario, 2 = Ejecutivo, 3 = super admin
+    //1 ==  User, 2 = Executive
     private Integer role;
+    @Temporal(TemporalType.DATE)
+    private Date birthdate;
 
 
 }

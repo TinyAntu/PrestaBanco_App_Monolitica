@@ -7,6 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -32,12 +36,21 @@ public class UserService {
             } else {
 
                 System.out.println("Incorrect password for user with Rut: " + Rut);
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Contraseña incorrecta");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
             }
         } else {
 
             System.out.println("User not found for Rut: " + Rut);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
     }
+
+    public int AgeInYears(Date birthdate){
+        LocalDate Local_birthdate = birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        LocalDate Actual_date = LocalDate.now();
+
+        return Period.between(Local_birthdate, Actual_date).getYears();
+    }
+
 }

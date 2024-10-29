@@ -1,10 +1,14 @@
 package edu.mtisw.payrollbackend.services;
 import edu.mtisw.payrollbackend.entities.CreditEntity;
 import edu.mtisw.payrollbackend.entities.DocumentEntity;
+import edu.mtisw.payrollbackend.entities.UserEntity;
 import edu.mtisw.payrollbackend.repositories.CreditRepository;
+import edu.mtisw.payrollbackend.repositories.DocumentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -12,8 +16,12 @@ public class CreditService {
     @Autowired
     CreditRepository creditRepository;
 
+    @Autowired
+    DocumentService documentService;
 
-    //Crear un credito con los datos del front end
+    @Autowired
+    UserService userService;
+
     public CreditEntity saveCredit(Integer capital, Double annual_interest, Double years, Integer type,
                                    Integer income, Integer property_value, Integer amount, Integer debt, Long userId) {
         CreditEntity credit = CreditEntity.builder()
@@ -32,7 +40,7 @@ public class CreditService {
         return creditRepository.save(credit);
     }
 
-    //Descripcion: Realiza el calculo de la cuota mensual del prestamo
+
     public Long montly_Share(Integer Capital, Double Annual_interest, Double Years){
         Double M = 0.0;
         Double r = Annual_interest/100/12;
@@ -49,51 +57,79 @@ public class CreditService {
     public Boolean R1(Long id){
         CreditEntity Credit = creditRepository.findByIdCredit(id);
         Long Share = montly_Share(Credit.getCapital(), Credit.getAnnual_interest(), Credit.getYears());
-        if(share_income(Share, Credit.getIncome())){
-            //Se cumple la condicion
-            return true;
-        }else{
-            //Se rechaza la peticion
-            Credit.setState(false);
-            //No se cumple la condicion
-            return false;
-        }
+        return share_income(Share, Credit.getIncome());
     }
 
-    public Integer financing(Integer value, Integer amount ){
-        return  (value/amount)*100;
+    public Boolean R4(Long id){
+        CreditEntity Credit = creditRepository.findByIdCredit(id);
+        Integer Debt = Credit.getDebt();
+        Integer Income = Credit.getIncome();
+        Long Share = montly_Share(Credit.getCapital(), Credit.getAnnual_interest(), Credit.getYears());
+        return Income * 0.5 >= Debt + Share;
     }
 
-    public void R5(Long id){
+    public Boolean R5(Long id){
         CreditEntity Credit = creditRepository.findByIdCredit(id);
         Integer Credit_type = Credit.getType();
         Integer Financing = financing(Credit.getProperty_value(), Credit.getAmount());
-        if(Credit_type == 1 && Financing <= 80 ){
-            Credit.setLevel(5);
-        }else {
-            Credit.setState(false);
-        }
-
-        if(Credit_type == 2 && Financing <= 70 ){
-            Credit.setLevel(5);
-        }else {
-            Credit.setState(false);
-        }
-
-        if(Credit_type == 3 && Financing <= 60 ){
-            Credit.setLevel(5);
-        }else {
-            Credit.setState(false);
-        }
-
-
-        if(Credit_type == 4 && Financing <= 50 ){
-            Credit.setLevel(5);
-        }else {
-            Credit.setState(false);
-        }
+        return switch (Credit_type) {
+            case 1 -> // First home
+                    Financing <= 80;
+            case 2 -> // Second home
+                    Financing <= 70;
+            case 3 -> // Market property
+                    Financing <= 60;
+            case 4 -> // Remodeling
+                    Financing <= 50;
+            default -> false; // it exceeds the maximum
+        };
     }
 
+    public Boolean R6(Long id){
+        CreditEntity Credit = creditRepository.findByIdCredit(id);
+        UserEntity user = userService.findUserById(Credit.getUserId());
+        Integer user_age = userService.AgeInYears(user.getBirthdate());
+
+        return user_age + Credit.getYears() < 70;
+    }
+
+    public Boolean E1(Long id) {
+        CreditEntity Credit = creditRepository.findByIdCredit(id);
+        Integer type_credit = Credit.getType();
+        List<DocumentEntity> Docs = documentService.getDocuments(id);
+
+        //If anything (except state) is null return false
+        if (Credit.getIdCredit() == null ||
+                Credit.getCapital() == null ||
+                Credit.getAnnual_interest() == null ||
+                Credit.getYears() == null ||
+                Credit.getType() == null ||
+                Credit.getIncome() == null ||
+                Credit.getLevel() == null ||
+                Credit.getProperty_value() == null ||
+                Credit.getAmount() == null ||
+                Credit.getDebt() == null ||
+                Credit.getUserId() == null) {
+            return false;
+        }
+
+        return switch (type_credit) {
+            case 1 -> // First home
+                    Docs.size() >= 3;
+            case 2 -> // Second home
+                    Docs.size() >= 4;
+            case 3 -> // Market property
+                    Docs.size() >= 4;
+            case 4 -> // Remodeling
+                    Docs.size() >= 3;
+            default -> false; // Invalid credit type
+        };
+    }
+
+
+    public Integer financing(Integer value, Integer amount ){
+        return  (amount/value)*100;
+    }
 
     public boolean deleteCredit(Long id) throws Exception{
         try{

@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -7,14 +9,28 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Sidemenu from "./Sidemenu";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [isLog, setIsLog] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation(); // To detect route changes
+
   const toggleDrawer = (open) => (event) => {
     setOpen(open);
+  };
+
+  // Check login status on every route change
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    setIsLog(!!userId); // Update `isLog` if userId exists
+  }, [location]); // Dependency on `location` to re-check on route change
+
+  const handleLogout = () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userTypeId");
+    setIsLog(false);
+    navigate("/user/login");
   };
 
   return (
@@ -32,22 +48,26 @@ export default function Navbar() {
             <MenuIcon />
           </IconButton>
 
-          <Button color="inherit"
-            onClick={() => navigate("/user/register")}
-          
-          >
-            Register
-            </Button>
+          {!isLog && (
+            <>
+              <Button color="inherit" onClick={() => navigate("/user/register")}>
+                Register
+              </Button>
+              <Button color="inherit" onClick={() => navigate("/user/login")}>
+                Login
+              </Button>
+            </>
+          )}
 
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          PrestaBanco: Sitema de Creditos bancarios
-          </Typography>
-          <Button color="inherit"
-            onClick={() => navigate("/user/login")}
-          
-          > 
-            Login
+          {isLog && (
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
             </Button>
+          )}
+
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: "center" }}>
+            PrestaBanco: Sistema de Créditos Bancarios
+          </Typography>
         </Toolbar>
       </AppBar>
 
@@ -55,3 +75,4 @@ export default function Navbar() {
     </Box>
   );
 }
+

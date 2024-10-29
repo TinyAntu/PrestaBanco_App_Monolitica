@@ -25,10 +25,10 @@ public class CreditEntity {
     private Integer capital;
     private Double annual_interest;
     private Double years;
-    // 1 = Primera vivienda, 2 = Segunda vivienda, 3 = Propiedades comerciles, 4 = Remodelacion
+    // 1 =first home, 2 = Second home, 3 = Market property, 4 = remodeling
     private Integer type;
     private Integer income;
-    //El estado null porque debe ser rechazado o aprovado
+    //Null == to be checked, false == disapproved, true == approved
     @Column
     private Boolean state = null;
 
@@ -40,9 +40,9 @@ public class CreditEntity {
 
     private Integer debt;
 
-    //Para el siguimiento de solicitudes
+    //To follow the processes
     private Integer e;
 
-    //Un credito debe tener su usario
+    //One credit needs a user
     private Long userId;
 }

@@ -9,19 +9,20 @@ const UserRegister = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(false);
+  const [birthdate, setBirthdate] = useState("");
 
   const navigate = useNavigate();
   const saveUser = (e) => {
     e.preventDefault();
-    const userRole = role ? 2 : 1; // 2 para "Ejecutivo", 1 para "Normal"
-    const user = { rut, email, name, password, role: userRole };
+    const userRole = role ? 2 : 1; 
+    const user = { rut, email, name, password, role: userRole, birthdate };
 
     userService
       .register(user)
       .then((response) => {
         const userId = response.data.id;
         console.log("Usuario registrado exitosamente", response.data);
-        // Guardar el userId y el userTypeId en localStorage
+        // Save userId and userTypeId in localStorage
         localStorage.setItem("userId", userId);
         localStorage.setItem("userTypeId", userRole);
         console.log("API Response:", response);
@@ -97,6 +98,20 @@ const UserRegister = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </FormControl>
+
+      <FormControl margin="normal">
+        <TextField
+          id="birthdate"
+          label="Fecha de Nacimiento"
+          type="date"
+          value={birthdate}
+          variant="outlined"
+          sx={{ width: '650px' }}
+          InputLabelProps={{ shrink: true }}
+          onChange={(e) => setBirthdate(e.target.value)}
+        />
+      </FormControl>
+
 
       <FormControlLabel
         control={
