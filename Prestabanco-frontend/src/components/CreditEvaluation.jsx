@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 const CreditEvaluation = () => {
   const [credits, setCredits] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [selectedCredit, setSelectedCredit] = useState(null);
   const [evaluationResult, setEvaluationResult] = useState(null);
   const [documents, setDocuments] = useState([]);
@@ -80,6 +81,11 @@ const CreditEvaluation = () => {
     }
   };
 
+  const handleViewMoreClick = (credit) => {
+    setSelectedCredit(credit);
+    setOpenDetailsDialog(true);
+  };
+
   const fetchDocuments = (creditId) => {
     documentService.getDocumentsByCreditId(creditId)
         .then(response => {
@@ -124,7 +130,8 @@ const CreditEvaluation = () => {
 
   const handleReject = () =>{
     if (selectedCredit) {
-      const updatedCredit = { ...selectedCredit, state: false };
+      const updatedCredit = { ...selectedCredit, state: false, e: 7 };
+      
 
       creditService.update(selectedCredit.idCredit, updatedCredit)
         .then(() => {
@@ -179,9 +186,9 @@ const CreditEvaluation = () => {
               <TableCell align="left">Cantidad</TableCell>
               <TableCell align="left">Interés</TableCell>
               <TableCell align="right">Nivel</TableCell>
-              <TableCell align="right">Tipo</TableCell>
               <TableCell align="right">Etapa</TableCell>
-              <TableCell align="left">Estado</TableCell>
+              <TableCell align="right">Tipo</TableCell>
+              <TableCell align="right">Estado</TableCell>
               <TableCell align="center">Acciones</TableCell>
             </TableRow>
           </TableHead>
@@ -191,19 +198,46 @@ const CreditEvaluation = () => {
                 <TableCell align="left">{credit.amount}</TableCell>
                 <TableCell align="left">{credit.annual_interest}</TableCell>
                 <TableCell align="right">{credit.level}</TableCell>
-                <TableCell align="right">{credit.e}</TableCell>
-                <TableCell align="right">{credit.type}</TableCell>
+                
+                <TableCell align="right">
+                {credit.e === 1 && "Revision Inicial"}
+                {credit.e === 2 && "Pendiente de Documentacion"}
+                {credit.e === 3 && "En Evaluacion"}
+                {credit.e === 4 && "Pre-Aprobada"}
+                {credit.e === 5 && "En Aprobacion Final"}
+                {credit.e === 6 && "Aprobada"}
+                {credit.e === 7 && "Rechazada"}
+                {credit.e === 8 && "Cancelada por el Cliente"}
+                {credit.e === 9 && "En Desembolso"}
+                {![1, 2, 3, 4,5,6,7,8,9].includes(credit.e) && "Etapa Desconocida"}
+                </TableCell>
+
+                <TableCell align="right">
+                {credit.type == 1 && "Primer Vivienda"}
+                {credit.type == 2 && "Segunda Vivienda"}
+                {credit.type == 3 && "Propiedades Comerciales"}
+                {credit.type == 4 && "Remodelacion"}
+                {![1, 2, 3, 4].includes(credit.type) && "Tipo Desconocido"}
+                </TableCell>
+
                 <TableCell align="right">{credit.state ? "Aprobado" : credit.state === null ? "En Revisión" : "Rechazado"}</TableCell>
+                
                 <TableCell align="center">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    onClick={() => handleEvaluateClick(credit)}
-                  >
+                  <Button variant="contained" color="primary" size="small" onClick={() => handleEvaluateClick(credit)}>
                     Evaluar
                   </Button>
+
+                  <Button 
+                    variant="outlined" 
+                    sx={{ color: "white", backgroundColor: "#333", "&:hover": { backgroundColor: "#555" } }} 
+                    size="small" 
+                    onClick={() => handleViewMoreClick(credit)}
+                  >
+                    Ver Más
+                  </Button>
+
                 </TableCell>
+
               </TableRow>
             ))}
           </TableBody>
@@ -310,6 +344,37 @@ const CreditEvaluation = () => {
 
         </DialogActions>
       </Dialog>
+      
+      <Dialog open={openDetailsDialog} onClose={() => setOpenDetailsDialog(false)} fullWidth>
+        <DialogTitle>Detalles del Crédito</DialogTitle>
+        <DialogContent>
+          {selectedCredit && (
+            <>
+              <p><strong>Id Crédito:</strong> {selectedCredit.idCredit}</p>
+              <p><strong>Cantidad:</strong> {selectedCredit.amount}</p>
+              <p><strong>Capital:</strong> {selectedCredit.capital}</p>
+              <p><strong>Ingresos:</strong> {selectedCredit.income}</p>
+              <p><strong>Valor de la Propiedad:</strong> {selectedCredit.property_value}</p>
+              <p><strong>Deuda:</strong> {selectedCredit.debt}</p>
+              <p><strong>Interés Anual:</strong> {selectedCredit.annual_interest}</p>
+              <p><strong>Años:</strong> {selectedCredit.years}</p>
+              <p><strong>Tipo:</strong> {
+                selectedCredit.type === 1 ? "Primera Vivienda" :
+                selectedCredit.type === 2 ? "Segunda Vivienda" :
+                selectedCredit.type === 3 ? "Propiedades Comerciales" :
+                selectedCredit.type === 4 ? "Remodelación" :
+                "Tipo Desconocido"
+              }</p>
+              <p><strong>Estado:</strong> {selectedCredit.state ? "Aprobado" : selectedCredit.state === null ? "En Revisión" : "Rechazado"}</p>
+              {/* Add more fields as necessary */}
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDetailsDialog(false)} color="primary">Cerrar</Button>
+        </DialogActions>
+      </Dialog>
+
     </>
   );
 };

@@ -12,6 +12,7 @@ function FollowCredits() {
     const [documents, setDocuments] = useState({
         file1: null,
         file2: null,
+        file3: null,
     });
 
     useEffect(() => {
@@ -43,6 +44,8 @@ function FollowCredits() {
             setDocuments((prev) => ({ ...prev, file1: file }));
         } else if (docType === 'file2') {
             setDocuments((prev) => ({ ...prev, file2: file }));
+        } else if (docType === 'file3') {
+            setDocuments((prev) => ({ ...prev, file3: file }));
         }
     };
 
@@ -60,7 +63,11 @@ function FollowCredits() {
                 });
         } else if (credit.e === 2) {
             setOpenDialog(true); // Open dialog for uploading documents
+        } else if (credit.e === 3) {
+            setOpenDialog(true); // Open dialog for the wait till e == 4
+            setEvaluationResult(false); // Set to false to disable the "Pasar de etapa" button
         }
+
     };
 
     const handleStageUp = () => {
@@ -80,9 +87,9 @@ function FollowCredits() {
     };
 
     const uploadDocuments = async (creditId) => {
-        const { file1, file2 } = documents;
+        const { file1, file2, file3 } = documents;
 
-        if (file1 && file2) {
+        if (file1 && file2 && file3) {
             const documentData1 = {
                 file: await convertToBase64(file1),
                 doc_type: 'comprobante_ingresos',
@@ -97,10 +104,18 @@ function FollowCredits() {
                 idCredit: creditId,
             };
 
+            const documentData3 = {
+                file: await convertToBase64(file3),
+                doc_type: 'capacidad_ahorro',
+                filename: file3.name,
+                idCredit: creditId,
+            };
+
             try {
                 await Promise.all([
                     documentService.create(documentData1),
                     documentService.create(documentData2),
+                    documentService.create(documentData3),
                 ]);
                 alert("Documents uploaded successfully.");
                 setEvaluationResult(true);
@@ -140,7 +155,7 @@ function FollowCredits() {
                             <TableCell align="right">Nivel</TableCell>
                             <TableCell align="right">Etapa</TableCell>
                             <TableCell align="right">Tipo</TableCell>
-                            <TableCell align="left">Estado</TableCell>
+                            <TableCell align="right">Estado</TableCell>
                             <TableCell align="center">Acciones</TableCell>
                         </TableRow>
                     </TableHead>
@@ -150,8 +165,29 @@ function FollowCredits() {
                                 <TableCell align="left">{credit.amount}</TableCell>
                                 <TableCell align="left">{credit.annual_interest}</TableCell>
                                 <TableCell align="right">{credit.level}</TableCell>
-                                <TableCell align="right">{credit.e}</TableCell>
-                                <TableCell align="right">{credit.type}</TableCell>
+
+                                <TableCell align="right">
+                                {credit.e === 1 && "Revision Inicial"}
+                                {credit.e === 2 && "Pendiente de Documentacion"}
+                                {credit.e === 3 && "En Evaluacion"}
+                                {credit.e === 4 && "Pre-Aprobada"}
+                                {credit.e === 5 && "En Aprobacion Final"}
+                                {credit.e === 6 && "Aprobada"}
+                                {credit.e === 7 && "Rechazada"}
+                                {credit.e === 8 && "Cancelada por el Cliente"}
+                                {credit.e === 9 && "En Desembolso"}
+                                {![1, 2, 3, 4,5,6,7,8,9].includes(credit.e) && "Etapa Desconocida"}
+                                </TableCell>
+                                
+                                <TableCell align="right">
+                                {credit.type == 1 && "Primer Vivienda"}
+                                {credit.type == 2 && "Segunda Vivienda"}
+                                {credit.type == 3 && "Propiedades Comerciales"}
+                                {credit.type == 4 && "Remodelacion"}
+                                {![1, 2, 3, 4].includes(credit.type) && "Tipo Desconocido"}
+                                </TableCell>
+
+
                                 <TableCell align="right">{credit.state ? "Aprobado" : credit.state === null ? "En Revisión" : "Rechazado"}</TableCell>
                                 <TableCell align="center">
                                     <Button
@@ -200,7 +236,21 @@ function FollowCredits() {
                                         style={{ margin: '16px 0' }}
                                     />
                                     <Typography>Certificado de avalúo</Typography>
+
+                                    <TextField
+                                        type="file"
+                                        accept=".pdf"
+                                        onChange={(e) => handleDocumentChange(e, 'file3')}
+                                        style={{ margin: '16px 0' }}
+                                    />
+                                    <Typography>Capacidad de ahorro</Typography>
                                 </>
+                            )}
+
+                            {selectedCredit.e === 3 && (
+                                <p>
+                                    {"Espere hasta que un ejecutivo realize las comprobaciones necesarias."}
+                                </p>
                             )}
                         </>
                     )}
