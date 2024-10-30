@@ -63,8 +63,16 @@ function FollowCredits() {
                 });
         } else if (credit.e === 2) {
             setOpenDialog(true); // Open dialog for uploading documents
+            setEvaluationResult(false); // Set to false to disable the "Pasar de etapa" button
         } else if (credit.e === 3) {
             setOpenDialog(true); // Open dialog for the wait till e == 4
+            setEvaluationResult(false); // Set to false to disable the "Pasar de etapa" button
+        } else if(credit.e == 4){
+            setOpenDialog(true); 
+            setEvaluationResult(true); // Set to true to enable the "Pasar de etapa" button
+
+        } else if (credit.e === 8) {
+            setOpenDialog(true); 
             setEvaluationResult(false); // Set to false to disable the "Pasar de etapa" button
         }
 
@@ -86,9 +94,24 @@ function FollowCredits() {
         }
     };
 
+    const handleCancel= () => {
+        if(selectedCredit){
+            const updatedCredit = { ...selectedCredit, e: 8, state: false };
+            creditService.update(selectedCredit.idCredit, updatedCredit)
+                .then(() => {
+                    console.log("Credito cancelado");
+                    init();
+                    setOpenDialog(false);
+                })
+                .catch((error) => {
+                    console.log("Error al intentar cancelar el crédito.", error);
+                });
+        }
+    };
+
     const uploadDocuments = async (creditId) => {
         const { file1, file2, file3 } = documents;
-
+    
         if (file1 && file2 && file3) {
             const documentData1 = {
                 file: await convertToBase64(file1),
@@ -96,35 +119,50 @@ function FollowCredits() {
                 filename: file1.name,
                 idCredit: creditId,
             };
-
+    
             const documentData2 = {
                 file: await convertToBase64(file2),
                 doc_type: 'certificado_avaluo',
                 filename: file2.name,
                 idCredit: creditId,
             };
-
+    
             const documentData3 = {
                 file: await convertToBase64(file3),
                 doc_type: 'capacidad_ahorro',
                 filename: file3.name,
                 idCredit: creditId,
             };
-
+    
             try {
                 await Promise.all([
                     documentService.create(documentData1),
                     documentService.create(documentData2),
                     documentService.create(documentData3),
                 ]);
+    
                 alert("Documents uploaded successfully.");
                 setEvaluationResult(true);
+    
+                // Update the credit stage when the docs are uploaded
+                const updatedCredit = { ...selectedCredit, e: selectedCredit.e + 1 };
+                await creditService.update(selectedCredit.idCredit, updatedCredit);
+    
+                //To refresh it
+                setCredits((prevCredits) =>
+                    prevCredits.map((credit) =>
+                        credit.idCredit === selectedCredit.idCredit
+                            ? { ...credit, e: updatedCredit.e }
+                            : credit
+                    )
+                );
+                setSelectedCredit(updatedCredit);
             } catch (error) {
                 console.error("Error uploading documents:", error);
                 alert("Error uploading documents. Please try again.");
             }
         } else {
-            alert("Please upload both documents.");
+            alert("Please upload all required documents.");
         }
     };
 
@@ -197,7 +235,20 @@ function FollowCredits() {
                                         onClick={() => handleFollowClick(credit)}
                                     >
                                         Consultar
+                                        
                                     </Button>
+
+
+                                    {credit.e < 6 && ( // Condición para mostrar el botón "Cancelar"
+                                        <Button 
+                                            variant="outlined" 
+                                            sx={{ color: "white", backgroundColor: "#333", "&:hover": { backgroundColor: "#555" } }} 
+                                            size="small" 
+                                            onClick={() => handleCancel(credit)}
+                                        >
+                                            Cancelar
+                                        </Button>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -252,6 +303,62 @@ function FollowCredits() {
                                     {"Espere hasta que un ejecutivo realize las comprobaciones necesarias."}
                                 </p>
                             )}
+
+                            {selectedCredit.e === 4 && (
+                                <>
+                                    <p>
+                                        <strong>Tipo de Crédito:</strong>{" "}
+                                        {selectedCredit.type === 1
+                                            ? "Primera vivienda"
+                                            : selectedCredit.type === 2
+                                            ? "Segunda vivienda"
+                                            : selectedCredit.type === 3
+                                            ? "Propiedades comerciales"
+                                            : selectedCredit.type === 4
+                                            ? "Remodelación"
+                                            : "Tipo de crédito desconocido"}
+                                    </p>
+
+                                    {selectedCredit.type === 1 && (
+                                        <p>Condiciones del crédito para Primera vivienda: <br />
+                                            - Plazo máximo de 30 años.<br />
+                                            - Tasa de interés anual 3.5% - 5.0%.<br />
+                                            - Monto de financiamiento máximo del 80% del valor de la propiedad.
+                                        </p>
+                                    )}
+
+                                    {selectedCredit.type === 2 && (
+                                        <p>Condiciones del crédito para Segunda vivienda: <br />
+                                            - Plazo máximo de 20 años.<br />
+                                            - Tasa de interés anual 4.0% - 6.0%.<br />
+                                            - Monto de financiamiento máximo del 70% del valor de la propiedad.
+                                        </p>
+                                    )}
+
+                                    {selectedCredit.type === 3 && (
+                                        <p>Condiciones del crédito para Propiedades comerciales: <br />
+                                            - Plazo máximo de 25 años.<br />
+                                            - Tasa de interés anual 5.0% - 7.0%.<br />
+                                            - Monto de financiamiento máximo del 60% del valor de la propiedad.
+                                        </p>
+                                    )}
+
+                                    {selectedCredit.type === 4 && (
+                                        <p>Condiciones del crédito para Remodelación: <br />
+                                            - Plazo máximo de 15 años.<br />
+                                            - Tasa de interés anual 4.5% - 6.0%.<br />
+                                            - Monto de financiamiento máximo del 50% del valor de la propiedad.
+                                        </p>
+                                    )}
+                                </>
+                            )}
+
+                            {selectedCredit.e === 8 && (
+                                <p>
+                                    {"El cliente ha decidido cancelar la solicitud de  crédito."}
+                                </p>
+                            )}
+
                         </>
                     )}
                 </DialogContentText>
@@ -270,14 +377,16 @@ function FollowCredits() {
                         </Button>
                     )}
 
+                    {selectedCredit && selectedCredit.e !== 2 && (
                     <Button
                         onClick={handleStageUp}
                         color="primary"
                         variant="contained"
                         disabled={!evaluationResult} // Disable if evaluation condition is not met
                     >
-                        Pasar de etapa
+                        {selectedCredit.e === 4 ? "Aceptar" : "Pasar de etapa"}
                     </Button>
+                )}
                 </DialogActions>          
             </Dialog>
         </>
