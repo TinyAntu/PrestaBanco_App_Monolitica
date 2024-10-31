@@ -45,12 +45,14 @@ public class UserService {
         }
     }
 
-    public int AgeInYears(Date birthdate){
-        LocalDate Local_birthdate = birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
+    public int AgeInYears(Date birthdate) {
+        LocalDate Local_birthdate;
+        if (birthdate instanceof java.sql.Date) {
+            Local_birthdate = ((java.sql.Date) birthdate).toLocalDate();
+        } else {
+            Local_birthdate = birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        }
         LocalDate Actual_date = LocalDate.now();
-
         return Period.between(Local_birthdate, Actual_date).getYears();
     }
-
 }

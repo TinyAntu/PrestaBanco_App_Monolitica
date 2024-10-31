@@ -11,6 +11,8 @@ const CreditEvaluation = () => {
   const [selectedCredit, setSelectedCredit] = useState(null);
   const [evaluationResult, setEvaluationResult] = useState(null);
   const [documents, setDocuments] = useState([]);
+  const [responses, setResponses] = useState([null, null, null, null, null]); // For the questions in the level seven
+  const [score, setScore] = useState(0); // To determine if the credit is approved or not, we need something else
   const navigate = useNavigate();
 
   const init = () => {
@@ -23,6 +25,8 @@ const CreditEvaluation = () => {
         console.log("Error al obtener créditos.", error);
       });
   };
+
+  
 
   const handleEvaluateClick = (credit) => {
     setSelectedCredit(credit);
@@ -79,6 +83,20 @@ const CreditEvaluation = () => {
           console.log("Error al evaluar el crédito.", error);
         });
     }
+    if(credit.level === 7){
+      setResponses([null, null, null, null, null]); // Reset responses for new evaluation
+      setScore(0);
+      setOpenDialog(true);
+    }
+  };
+
+  const handleResponseChange = (index, value) =>{
+    const updatedResponses = [...responses];
+    updatedResponses[index] = value;
+    setResponses(updatedResponses);
+    
+    const updatedScore = updatedResponses.reduce((acc, curr) => acc + (curr === "Cumple" ? 1 : 0), 0);
+    setScore(updatedScore);
   };
 
   const handleViewMoreClick = (credit) => {
@@ -118,12 +136,27 @@ const CreditEvaluation = () => {
 
       creditService.update(selectedCredit.idCredit, updatedCredit)
         .then(() => {
-          console.log("Nivel del crédito incrementado");
+          console.log("Level up successful");
           init();
           setOpenDialog(false);
         })
         .catch((error) => {
-          console.log("Error al intentar incrementar el nivel del crédito.", error);
+          console.log("Error while leveling up", error);
+        });
+    }
+  };
+
+  const handleAprove = () =>{
+    if (selectedCredit) {
+      const updatedCredit = { ...selectedCredit, state: true, e: 4 };
+      creditService.update(selectedCredit.idCredit, updatedCredit)
+        .then(() => {
+          console.log("Aproved credit successfully");
+          init();
+          setOpenDialog(false);
+        })
+        .catch((error) => {
+          console.log("Error while aproving the credit", error);
         });
     }
   };
@@ -145,22 +178,7 @@ const CreditEvaluation = () => {
     }
   };
 
-  const handleRevision = () =>{
-    if (selectedCredit) {
-      const updatedCredit = { ...selectedCredit, state: null };
-
-      creditService.update(selectedCredit.idCredit, updatedCredit)
-        .then(() => {
-          console.log("Credito en revision");
-          init();
-          setOpenDialog(false);
-        })
-        .catch((error) => {
-          console.log("Error al intentar revisar el credito.", error);
-        });
-    }
-  };
-
+  
   useEffect(() => {
     if (selectedCredit) {
       fetchDocuments(selectedCredit.idCredit);
@@ -223,9 +241,11 @@ const CreditEvaluation = () => {
                 <TableCell align="right">{credit.state ? "Aprobado" : credit.state === null ? "En Revisión" : "Rechazado"}</TableCell>
                 
                 <TableCell align="center">
-                  <Button variant="contained" color="primary" size="small" onClick={() => handleEvaluateClick(credit)}>
-                    Evaluar
-                  </Button>
+                  {(credit.state === null) && (  // Verifica que credit.state sea null
+                    <Button variant="contained" color="primary" size="small" onClick={() => handleEvaluateClick(credit)}>
+                      Evaluar
+                    </Button>
+                  )}
 
                   <Button 
                     variant="outlined" 
@@ -294,6 +314,43 @@ const CreditEvaluation = () => {
                         </p>
                     )}
 
+                    {selectedCredit.level === 7 && (
+                      <>
+
+                      <p>Para determinar la capacidad de ahorro revise el documento de capacidad de ahorro y verifique los siguientes requisitos</p>
+                      {["El cliente debe tener un saldo mínimo en su cuenta de ahorros o inversiones que sea al menos el 10% del monto del préstamo solicitado.",
+                        "El cliente debe haber mantenido un saldo positivo en su cuenta de ahorros por lo menos durante los últimos 12 meses, sin realizar retiros significativos (> 50% del saldo)",
+                        "El cliente debe realizar depósitos regulares en su cuenta de ahorros o inversión. Se consideran regulares aquellos realizados con una frecuencia mensual o trimestral (el monto minimo de los depositos deben sumar al menos 5% de sus ingresos mensuales)",
+                        "Si el cliente tiene menos de 2 años en su cuenta de ahorros, debe tener un saldo acumulado que sea al menos el 20% del monto del préstamo solicitado (si el cliente tiene 2 años o más con la cuenta, un saldo acumulado del 10%será suficiente).",
+                        "Si el cliente ha realizado un retiro superior al 30% del saldo de su cuenta en los últimos 6 meses, marcar este punto como negativo, ya que indica una posible falta de estabilidad financiera."].map((question, index) => (
+                          <div key={index}>
+                            <p>{question}</p>
+                            <Button
+                              variant={responses[index] === "Cumple" ? "contained" : "outlined"}
+                              onClick={() => handleResponseChange(index, "Cumple")}
+                            >
+                              Cumple
+                            </Button>
+                            <Button
+                              variant={responses[index] === "No Cumple" ? "contained" : "outlined"}
+                              onClick={() => handleResponseChange(index, "No Cumple")}
+                            >
+                              No Cumple
+                            </Button>
+                          </div>
+                      ))}
+                      <p>
+                        Resultado: {score} de 5 preguntas cumplen los requisitos.
+                        <br />
+                        {score == 5  ? "Aprobacion : Capacidad de ahorro 'solida'." :
+                        score == 3 || score == 4 ? "Revision Adicional: Capacidad de ahorro 'moderada'" :
+                        "Rechazo: Capacidad de ahorro 'insuficiente'."
+                        }
+                      </p>
+                    </>
+
+                    )}
+
                     <div>
                         <h4>Documentos Asociados:</h4>
                           {documents.map(doc => (
@@ -316,15 +373,29 @@ const CreditEvaluation = () => {
           <Button onClick={() => setOpenDialog(false)} color="secondary">
             Cancelar
           </Button>
+          
+          
+
+          {!(selectedCredit && selectedCredit.level === 7) && (
+            <Button
+              onClick={handleLevelUp}
+              color="primary"
+              variant="contained"
+              disabled={!evaluationResult}
+            >
+              Incrementar Nivel
+            </Button>
+          )}
 
           <Button
-            onClick={handleLevelUp}
+            onClick={handleAprove}
             color="primary"
             variant="contained"
-            disabled={!evaluationResult} // Deshabilitar si no se cumple la condición
+            disabled={!(selectedCredit && selectedCredit.level === 7 && score === 5)}
           >
-            Incrementar Nivel
+            Aprobacion
           </Button>
+          
 
           <Button
             onClick={handleReject}
@@ -332,14 +403,6 @@ const CreditEvaluation = () => {
             variant="contained"
           >
             Rechazar
-          </Button>
-
-          <Button
-            onClick={handleRevision}
-            color="primary"
-            variant="contained"
-          >
-            En revision
           </Button>
 
         </DialogActions>

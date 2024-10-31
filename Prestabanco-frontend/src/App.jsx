@@ -2,13 +2,7 @@ import './App.css'
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 import Navbar from "./components/Navbar"
 import Home from './components/Home';
-import EmployeeList from './components/EmployeesList';
-import AddEditEmployee from './components/AddEditEmployee';
-import ExtraHoursList from './components/ExtraHoursList';
-import AddEditExtraHours from './components/AddEditExtraHours';
 import NotFound from './components/NotFound';
-import PaycheckList from './components/PaycheckList';
-import PaycheckCalculate from './components/PaycheckCalculate';
 import SimulateCredit from './components/SimulateCredit';
 import CreditApplication from './components/CreditApplication';
 import UserRegister from './components/UserRegister';
