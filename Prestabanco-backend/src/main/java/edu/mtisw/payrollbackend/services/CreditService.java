@@ -49,6 +49,18 @@ public class CreditService {
         return Math.round(M);
     }
 
+    public Long total_cost(Long id){
+        CreditEntity Credit = creditRepository.findByIdCredit(id);
+        Integer FireHazardSecure = 20000;
+        Long Montly_share = montly_Share(Credit.getCapital(),Credit.getAnnual_interest(), Credit.getYears());
+        Double Administration_comision = Credit.getAmount()*0.01;
+        Double DeductionSecure = Montly_share*0.03;
+        Double Months = Credit.getYears()*12;
+        Double Actual_Montly_share = Montly_share + DeductionSecure+ FireHazardSecure;
+        Double Total_Cost = Actual_Montly_share*Months + Administration_comision;
+        return Math.round(Total_Cost);
+    }
+
     public Boolean share_income(Long share, Integer income){
         Long relation = (share/income)*100;
         return relation <= 35;

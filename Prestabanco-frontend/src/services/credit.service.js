@@ -54,4 +54,8 @@ const follow1 = (creditId) =>{
     return httpClient.get(`/api/v1/credits/E1/${creditId}`);
 };
 
-export default{simulate, remove, create, getAll, evaluateStep1, follow1, update, getAllById, evaluateStep4,evaluateStep5, evaluateStep6};
+const totalCost = (creditId) =>{
+    return httpClient.get(`/api/v1/credits/total/${creditId}`);
+};
+
+export default{simulate, remove, create, getAll, evaluateStep1, follow1, update, getAllById, evaluateStep4,evaluateStep5, evaluateStep6, totalCost};

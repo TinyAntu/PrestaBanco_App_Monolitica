@@ -105,6 +105,12 @@ public class CreditController {
         return  ResponseEntity.ok(uptodatecredit);
     }
 
+    @GetMapping("/total/{id}")
+    public ResponseEntity<Long> TotalCost( @PathVariable Long id){
+        Long Total = creditService.total_cost(id);
+        return  ResponseEntity.ok(Total);
+    }
+
 
 
 }

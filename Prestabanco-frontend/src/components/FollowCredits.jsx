@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import creditService from "../services/credit.service";
 import documentService from '../services/document.service';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, Typography, DialogContentText, DialogTitle, TextField } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogActions, Typography, DialogContentText,DialogContent, DialogTitle, TextField } from "@mui/material";
 
 function FollowCredits() {
     const [userId, setUserId] = useState(null);
     const [credits, setCredits] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openTotalCostDialog, setOpenTotalCostDialog] = useState(false);
     const [selectedCredit, setSelectedCredit] = useState(null);
     const [evaluationResult, setEvaluationResult] = useState(null);
+    const [totalCost, setTotalCost] = useState(null);
     const [documents, setDocuments] = useState({
         file1: null,
         file2: null,
@@ -103,6 +105,20 @@ function FollowCredits() {
                 })
                 .catch((error) => {
                     console.log("Error al intentar incrementar la etapa del crédito.", error);
+                });
+        }
+    };
+
+    const handleTotalCost = (credit) => {
+        if (selectedCredit) {
+            creditService.totalCost(credit.idCredit)
+                .then((response) => {
+                    setTotalCost(response.data);
+                    setOpenTotalCostDialog(true); 
+                    console.log("The total cost is:", response.data);
+                })
+                .catch((error) => {
+                    console.error("Error while calculating the total cost:", error);
                 });
         }
     };
@@ -257,6 +273,7 @@ function FollowCredits() {
 
 
                                 <TableCell align="right">{credit.state ? "Aprobado" : credit.state === null ? "En Revisión" : "Rechazado"}</TableCell>
+
                                 <TableCell align="center">
                                     <Button
                                         variant="contained"
@@ -267,9 +284,19 @@ function FollowCredits() {
                                         Consultar
                                         
                                     </Button>
+                                    {(credit.e === 9 || credit.e === 4 || credit.e === 6) && (
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        size="small"
+                                        onClick={() => handleTotalCost(credit)} 
+                                        sx={{ marginLeft: '8px' }} 
+                                    >
+                                        Costos Totales
+                                    </Button>
+                                    )}
 
-
-                                    {credit.e < 6 && ( // Condición para mostrar el botón "Cancelar"
+                                    {credit.e < 6 && ( // Condintion until the user can cancel the credit
                                         <Button 
                                             variant="outlined" 
                                             sx={{ color: "white", backgroundColor: "#333", "&:hover": { backgroundColor: "#555" } }} 
@@ -279,6 +306,7 @@ function FollowCredits() {
                                             Cancelar
                                         </Button>
                                     )}
+
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -286,6 +314,42 @@ function FollowCredits() {
                 </Table>
             </TableContainer>
 
+            {/* Dialog for the total cost */}
+            <Dialog open={openTotalCostDialog} onClose={() => setOpenTotalCostDialog(false)}>
+                <DialogTitle>Costos Totales</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {totalCost !== null 
+                            ? `El costo total calculado es: $${totalCost}`
+                            : "Calculando el costo total..."}
+                    </DialogContentText>
+
+                    <DialogContentText sx={{ marginTop: '16px' }}>
+                        Esta suma considera los seguros de degravamen y de incendio donde:
+                        <br /><br />
+                        El seguro de incendios tiene un costo fijo de: $20,000 mensuales.
+                        <br />
+                        El seguro de desgravamen es: monto del préstamo * 0.03 $ mensuales.
+                        <br /><br />
+                        Donde el costo mensual es: 
+                        Cuota mensual del préstamo + seguro de incendios + seguro de desgravamen.
+                        <br /><br />
+                        Además, dentro del costo total se asume una comisión por administración de: 
+                        monto del préstamo * 0.01.
+                        <br /><br />
+                        Donde el costo final es: 
+                        Costo mensual * (Años del préstamo * 12) + comisión por administración.
+                    </DialogContentText>
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={() => setOpenTotalCostDialog(false)} color="secondary">
+                        Cerrar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+    
+            {/* Text for the levels */}
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
                 <DialogTitle>Consultar credito</DialogTitle>
                 <DialogContentText sx={{ padding: '20px' }}>
@@ -398,7 +462,7 @@ function FollowCredits() {
                                     <input 
                                         type="date" 
                                         id="contract-signing-date" 
-                                        onChange={(e) => console.log("Fecha seleccionada:", e.target.value)} // Puedes manejar la fecha como desees
+                                        onChange={(e) => console.log("Fecha seleccionada:", e.target.value)} 
                                     />
                                 </div>
                             )}
@@ -514,6 +578,8 @@ function FollowCredits() {
                             )}
                         </>
                     )}
+
+                    
 
 
                 </DialogActions>          
