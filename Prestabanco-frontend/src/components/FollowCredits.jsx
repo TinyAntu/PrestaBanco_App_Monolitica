@@ -71,7 +71,20 @@ function FollowCredits() {
             setOpenDialog(true); 
             setEvaluationResult(true); // Set to true to enable the "Pasar de etapa" button
 
+        } else if(credit.e == 5){
+            setOpenDialog(true); 
+            setEvaluationResult(true); // Set to true to enable the "Pasar de etapa" button
+
+        } else if(credit.e == 6){
+            setOpenDialog(true); 
+            setEvaluationResult(true); // Set to true to enable the "Pasar de etapa" button
+        } else if(credit.e == 7){
+            setOpenDialog(true); 
+            setEvaluationResult(false); // Set to true to enable the "Pasar de etapa" button
         } else if (credit.e === 8) {
+            setOpenDialog(true); 
+            setEvaluationResult(false); // Set to false to disable the "Pasar de etapa" button
+        } else if (credit.e === 9) {
             setOpenDialog(true); 
             setEvaluationResult(false); // Set to false to disable the "Pasar de etapa" button
         }
@@ -93,6 +106,23 @@ function FollowCredits() {
                 });
         }
     };
+
+    const handleAprove = () => {
+        if (selectedCredit ) {
+            const updatedCredit = { ...selectedCredit, e: 9 };
+    
+            creditService.update(selectedCredit.idCredit, updatedCredit)
+                .then(() => {
+                    console.log("This credit is aproved successfully"); 
+                    init();
+                    setOpenDialog(false);
+                })
+                .catch((error) => {
+                    console.log("Error while aproving the credit.", error);
+                });
+        }
+    };
+
 
     const handleCancel= () => {
         if(selectedCredit){
@@ -353,9 +383,94 @@ function FollowCredits() {
                                 </>
                             )}
 
+                            {selectedCredit.e === 5 && (
+                                <p>
+                                    {"Se revisan los detalles finales, se emiten los contratos y se preparan los documentos legales. "}
+                                </p>
+                            )}
+
+                            {selectedCredit.e === 6 && (
+                                <div>
+                                    <p>
+                                        {"Se confirma la aprobacion del credito."}
+                                    </p>
+                                    <label htmlFor="contract-signing-date">Seleccione una fecha para la firma del contrato:</label>
+                                    <input 
+                                        type="date" 
+                                        id="contract-signing-date" 
+                                        onChange={(e) => console.log("Fecha seleccionada:", e.target.value)} // Puedes manejar la fecha como desees
+                                    />
+                                </div>
+                            )}
+
+                            {selectedCredit.e === 7 && (
+                                <>
+                                    <p>
+                                        <strong>La solicitud se rechazo en el nivel:</strong>{" "}
+                                        {selectedCredit.level === 1
+                                            ? "Relación Cuota/Ingreso"
+                                            : selectedCredit.level === 2
+                                            ? "Historial Crediticio del Cliente"
+                                            : selectedCredit.level === 3
+                                            ? "Antigüedad Laboral y Estabilidad"
+                                            : selectedCredit.level === 4
+                                            ? "Relación Deuda/Ingreso"
+                                            : selectedCredit.level === 5
+                                            ? "Monto Máximo de Financiamiento"
+                                            : selectedCredit.level === 6
+                                            ? "Edad del Solicitante"
+                                            : selectedCredit.level === 7
+                                            ? "Capacidad de Ahorro"
+                                            : "Rechazo desconocido"}
+                                    </p>
+
+                                    {selectedCredit.level === 1 && (
+                                        <p> La relación cuota/ingreso es mayor que el umbral establecido por el banco (35%).
+                                        </p>
+                                    )}
+
+                                    {selectedCredit.level === 2 && (
+                                        <p>Existen morosidades graves o una alta cantidad de deudas pendientes.
+                                        </p>
+                                    )}
+
+                                    {selectedCredit.level === 3 && (
+                                        <p>Sus datos no cumplem con la antiguedad laboral o estabilidad necesarias.
+                                        </p>
+                                    )}
+
+                                    {selectedCredit.level === 4 && (
+                                        <p>Las deudas superar el 50% de los ingresos mensuales.
+                                        </p>
+                                    )}
+
+                                    {selectedCredit.level === 5 && (
+                                        <p>El monto solicitado supera el maximo establecido del valor de la propiedad.
+                                        </p>
+                                    )}
+
+                                    {selectedCredit.level === 6 && (
+                                        <p>La edad al final el prestamo se encuentra muy cercano a la edad maxima permitida.
+                                        </p>
+                                    )}
+
+                                    {selectedCredit.level === 7 && (
+                                        <p>Cuenta con una capacidad de ahorro insuficiente.
+                                        </p>
+                                    )}
+
+                                </>
+                            )}
+
                             {selectedCredit.e === 8 && (
                                 <p>
                                     {"El cliente ha decidido cancelar la solicitud de  crédito."}
+                                </p>
+                            )}
+
+                            {selectedCredit.e === 9 && (
+                                <p>
+                                    {"La solicitud ha sido aprobada y se está ejecutando el proceso de desembolso del monto aprobado."}
                                 </p>
                             )}
 
@@ -377,16 +492,30 @@ function FollowCredits() {
                         </Button>
                     )}
 
-                    {selectedCredit && selectedCredit.e !== 2 && (
-                    <Button
-                        onClick={handleStageUp}
-                        color="primary"
-                        variant="contained"
-                        disabled={!evaluationResult} // Disable if evaluation condition is not met
-                    >
-                        {selectedCredit.e === 4 ? "Aceptar" : "Pasar de etapa"}
-                    </Button>
-                )}
+                    {selectedCredit && selectedCredit.e !== 2 && selectedCredit.e !== 9 && selectedCredit.e !== 7 && (
+                        <>
+                            {selectedCredit.e !== 6 ? (
+                                <Button
+                                    onClick={handleStageUp}
+                                    color="primary"
+                                    variant="contained"
+                                    disabled={!evaluationResult} // Disable if evaluation condition is not met
+                                >
+                                    {selectedCredit.e === 4 ? "Aceptar" : "Pasar de etapa"}
+                                </Button>
+                            ) : (
+                                <Button
+                                    onClick={handleAprove} // Maneja la acción de desembolsar
+                                    color="secondary" // Puedes elegir otro color
+                                    variant="contained"
+                                >
+                                    Desembolsar
+                                </Button>
+                            )}
+                        </>
+                    )}
+
+
                 </DialogActions>          
             </Dialog>
         </>
