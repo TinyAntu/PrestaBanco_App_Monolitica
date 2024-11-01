@@ -17,11 +17,17 @@ public class DocumentService {
     DocumentRepository documentRepository;
 
     public DocumentEntity saveDocument (DocumentEntity document){
+        if (document == null) {
+            throw new IllegalArgumentException("The Document can't be null.");
+        }
         return documentRepository.save(document);
     }
 
     @Transactional
     public List<DocumentEntity> getDocuments(Long id){
+        if (id == null) {
+            throw new IllegalArgumentException("The ID can't be Null.");
+        }
         return documentRepository.findByIdCredit(id);
     }
 

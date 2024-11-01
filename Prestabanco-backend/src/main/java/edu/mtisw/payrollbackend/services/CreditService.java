@@ -22,6 +22,7 @@ public class CreditService {
     @Autowired
     UserService userService;
 
+
     public CreditEntity saveCredit(Integer capital, Double annual_interest, Double years, Integer type,
                                    Integer income, Integer property_value, Integer amount, Integer debt, Long userId) {
         CreditEntity credit = CreditEntity.builder()
@@ -54,7 +55,7 @@ public class CreditService {
         Integer FireHazardSecure = 20000;
         Long Montly_share = montly_Share(Credit.getCapital(),Credit.getAnnual_interest(), Credit.getYears());
         Double Administration_comision = Credit.getAmount()*0.01;
-        Double DeductionSecure = Montly_share*0.03;
+        Double DeductionSecure = Credit.getAmount()*0.0003;
         Double Months = Credit.getYears()*12;
         Double Actual_Montly_share = Montly_share + DeductionSecure+ FireHazardSecure;
         Double Total_Cost = Actual_Montly_share*Months + Administration_comision;
@@ -62,7 +63,7 @@ public class CreditService {
     }
 
     public Boolean share_income(Long share, Integer income){
-        Long relation = (share/income)*100;
+        Double relation = (share/(double)income)*100;
         return relation <= 35;
     }
 
@@ -140,7 +141,7 @@ public class CreditService {
 
 
     public Integer financing(Integer value, Integer amount ){
-        return  (amount/value)*100;
+        return  (int) ((amount / (double) value) * 100);
     }
 
     public boolean deleteCredit(Long id) throws Exception{
