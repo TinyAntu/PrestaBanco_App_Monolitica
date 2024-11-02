@@ -15,8 +15,8 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                dir('Prestabanco-backend') { // Cambia al directorio donde están tus tests si es necesario
-                    bat 'mvn test' // Usa 'bat' para Windows o 'sh' para Unix/Linux
+                dir('Prestabanco-backend') {
+                    bat 'mvn test'
                 }
             }
         }
@@ -24,7 +24,7 @@ pipeline {
         stage('Build docker image') {
             steps {
                 script {
-                    bat 'docker build -t tinyantu/Prestabanco:latest .'
+                    bat 'docker build -t tinyantu/prestabanco:latest .' 
                 }
             }
         }
@@ -35,7 +35,7 @@ pipeline {
                     withCredentials([string(credentialsId: 'dckhubpassword', variable: 'dhpsw')]) {
                         bat 'docker login -u tinyantu -p %dhpsw%'
                     }
-                    bat 'docker push tinyantu/Prestabanco:latest'
+                    bat 'docker push tinyantu/prestabanco:latest' 
                 }
             }
         }
