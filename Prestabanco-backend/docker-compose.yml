@@ -1,15 +1,15 @@
-version: "3.8"
+
 services:
   postgre-db:
     image: postgres
     restart: always
     volumes:
-      - ./data/db:/var/lib/postgres/data
+      - ./data/db:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: PrestaBanco
     ports:
-      - 50700:5432
+      - 51000:5432
   app:
     container_name: prestabanco_docker
     image: tinyantu/prestabanco_app_monolitica
