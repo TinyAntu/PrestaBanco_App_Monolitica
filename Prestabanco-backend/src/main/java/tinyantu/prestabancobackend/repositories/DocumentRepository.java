@@ -1,7 +1,6 @@
-package edu.mtisw.payrollbackend.repositories;
+package tinyantu.prestabancobackend.repositories;
 
-import edu.mtisw.payrollbackend.entities.CreditEntity;
-import edu.mtisw.payrollbackend.entities.DocumentEntity;
+import tinyantu.prestabancobackend.entities.DocumentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package edu.mtisw.payrollbackend.entities;
+package tinyantu.prestabancobackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

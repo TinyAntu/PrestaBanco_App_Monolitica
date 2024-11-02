@@ -1,7 +1,6 @@
-package edu.mtisw.payrollbackend.repositories;
+package tinyantu.prestabancobackend.repositories;
 
-import edu.mtisw.payrollbackend.entities.UserEntity;
-import org.apache.catalina.User;
+import tinyantu.prestabancobackend.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

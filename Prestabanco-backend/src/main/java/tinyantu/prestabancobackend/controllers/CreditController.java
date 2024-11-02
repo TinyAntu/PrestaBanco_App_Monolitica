@@ -1,19 +1,12 @@
-package edu.mtisw.payrollbackend.controllers;
-import edu.mtisw.payrollbackend.entities.CreditEntity;
-import edu.mtisw.payrollbackend.entities.DocumentEntity;
-import edu.mtisw.payrollbackend.entities.UserEntity;
-import edu.mtisw.payrollbackend.services.CreditService;
-import edu.mtisw.payrollbackend.services.DocumentService;
-import edu.mtisw.payrollbackend.services.UserService;
+package tinyantu.prestabancobackend.controllers;
+import tinyantu.prestabancobackend.entities.CreditEntity;
+import tinyantu.prestabancobackend.services.DocumentService;
+import tinyantu.prestabancobackend.services.UserService;
+import tinyantu.prestabancobackend.services.CreditService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

@@ -1,7 +1,7 @@
-package edu.mtisw.payrollbackend.controllers;
+package tinyantu.prestabancobackend.controllers;
 
-import edu.mtisw.payrollbackend.entities.UserEntity;
-import edu.mtisw.payrollbackend.services.UserService;
+import tinyantu.prestabancobackend.entities.UserEntity;
+import tinyantu.prestabancobackend.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
-package edu.mtisw.payrollbackend.services;
+package tinyantu.prestabancobackend.services;
 
-import edu.mtisw.payrollbackend.entities.UserEntity;
-import edu.mtisw.payrollbackend.repositories.UserRepository;
+import tinyantu.prestabancobackend.entities.UserEntity;
+import tinyantu.prestabancobackend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

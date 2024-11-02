@@ -1,7 +1,7 @@
-package edu.mtisw.payrollbackend.services;
+package tinyantu.prestabancobackend.services;
 
-import edu.mtisw.payrollbackend.entities.UserEntity;
-import edu.mtisw.payrollbackend.repositories.UserRepository;
+import tinyantu.prestabancobackend.entities.UserEntity;
+import tinyantu.prestabancobackend.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;

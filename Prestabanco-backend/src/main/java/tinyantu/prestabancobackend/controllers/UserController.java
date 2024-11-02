@@ -1,8 +1,8 @@
-package edu.mtisw.payrollbackend.controllers;
+package tinyantu.prestabancobackend.controllers;
 
 
-import edu.mtisw.payrollbackend.entities.UserEntity;
-import edu.mtisw.payrollbackend.services.UserService;
+import tinyantu.prestabancobackend.entities.UserEntity;
+import tinyantu.prestabancobackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

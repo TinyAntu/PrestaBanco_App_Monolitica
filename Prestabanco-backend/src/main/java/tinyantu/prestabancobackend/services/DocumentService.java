@@ -1,14 +1,11 @@
-package edu.mtisw.payrollbackend.services;
+package tinyantu.prestabancobackend.services;
 
-import edu.mtisw.payrollbackend.entities.CreditEntity;
-import edu.mtisw.payrollbackend.entities.DocumentEntity;
-import edu.mtisw.payrollbackend.repositories.DocumentRepository;
+import tinyantu.prestabancobackend.entities.DocumentEntity;
+import tinyantu.prestabancobackend.repositories.DocumentRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service

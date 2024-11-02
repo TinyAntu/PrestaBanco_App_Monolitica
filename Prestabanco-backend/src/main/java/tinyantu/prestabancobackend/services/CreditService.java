@@ -1,14 +1,12 @@
-package edu.mtisw.payrollbackend.services;
-import edu.mtisw.payrollbackend.entities.CreditEntity;
-import edu.mtisw.payrollbackend.entities.DocumentEntity;
-import edu.mtisw.payrollbackend.entities.UserEntity;
-import edu.mtisw.payrollbackend.repositories.CreditRepository;
-import edu.mtisw.payrollbackend.repositories.DocumentRepository;
+package tinyantu.prestabancobackend.services;
+import tinyantu.prestabancobackend.entities.CreditEntity;
+import tinyantu.prestabancobackend.entities.DocumentEntity;
+import tinyantu.prestabancobackend.entities.UserEntity;
+import tinyantu.prestabancobackend.repositories.CreditRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service

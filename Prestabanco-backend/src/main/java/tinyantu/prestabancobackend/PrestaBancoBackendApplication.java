@@ -1,13 +1,13 @@
-package edu.mtisw.payrollbackend;
+package tinyantu.prestabancobackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PayrollBackendApplication {
+public class PrestaBancoBackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PayrollBackendApplication.class, args);
+		SpringApplication.run(PrestaBancoBackendApplication.class, args);
 	}
 
 }
