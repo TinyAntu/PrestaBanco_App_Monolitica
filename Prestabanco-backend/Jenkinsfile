@@ -24,7 +24,7 @@ pipeline {
         stage('Build docker image') {
             steps {
                 script {
-                    bat 'docker build -t tinyantu/prestabanco:latest .' 
+                    bat 'docker build -t tinyantu/prestabanco:latest -f Prestabanco-backend/Dockerfile .'
                 }
             }
         }
