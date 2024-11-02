@@ -5,13 +5,13 @@ FROM node:17 as build
 WORKDIR /app
 
 # Copia el package.json y package-lock.json
-COPY PrestaBanco-frontend/package*.json ./
+COPY package*.json ./
 
 # Instala las dependencias
 RUN npm install
 
 # Copia el resto de la aplicación
-COPY PrestaBanco-frontend/ ./
+COPY . .
 
 # Construye la aplicación
 RUN npm run build

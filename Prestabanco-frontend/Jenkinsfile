@@ -4,8 +4,10 @@ pipeline {
     stages {
         stage('Build Frontend') {
             steps {
+                // Cambia al directorio del frontend
                 dir('PrestaBanco-frontend') {
-                    bat 'npm install' 
+                    // Instala las dependencias y construye el proyecto
+                    bat 'npm install' // Usa 'sh' si estás en un entorno Unix/Linux
                     bat 'npm run build'
                 }
             }
@@ -15,7 +17,7 @@ pipeline {
             steps {
                 // Construye la imagen Docker
                 script {
-                    bat 'docker build -t tinyantu/prestabanco-frontend:latest -f PrestaBanco-frontend/Dockerfile .'
+                    bat 'docker build -t tinyantu/prestabanco-frontend:latest -f PrestaBanco-frontend/Dockerfile PrestaBanco-frontend'
                 }
             }
         }
