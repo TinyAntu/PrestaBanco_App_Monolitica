@@ -1,12 +1,13 @@
 pipeline {
     agent any
     tools{
-        maven 'maven_3_9_9'
+        maven 'Maven'
     }
     stages{
         stage('Build maven'){
             steps{
-                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TinyAntu/PrestaBanco_App_Monolitica.git']])
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TinyAntu/PrestaBanco_App_Monolitica.git']])
+                dir('Prestabanco-backend')
                 bat 'mvn clean package'
             }
         }
@@ -28,7 +29,7 @@ pipeline {
         stage('Push image to Docker Hub'){
             steps{
                 script{
-                   withCredentials([string(credentialsId: 'dhpswid', variable: 'dhpsw')]) {
+                   withCredentials([string(credentialsId: 'dckhubpassword', variable: 'dhpsw')]) {
                         bat 'docker login -u tinyantu -p %dhpsw%'
                    }
                    bat 'docker push tinyantu/Prestabanco:latest'
