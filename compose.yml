@@ -21,23 +21,28 @@ services:
   backend1:
     image: tinyantu/prestabanco-backend:latest
     environment:
-      - DB_HOST=192.168.100.6
+      - DB_HOST=db
     networks:
       - backend-network
-
+    depends_on:
+      - db
   backend2:
     image: tinyantu/prestabanco-backend:latest
     environment:
-      - DB_HOST=192.168.100.6
+      - DB_HOST=db
     networks:
       - backend-network
+    depends_on:
+      - db
 
   backend3:
     image: tinyantu/prestabanco-backend:latest
     environment:
-      - DB_HOST=192.168.100.6
+      - DB_HOST=db
     networks:
       - backend-network
+    depends_on:
+      - db
 
   # Nginx for frontend load balancing
   nginx-frontend:
@@ -67,6 +72,22 @@ services:
     networks:
       - backend-network
 
+  # PostgreSQL Database
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=Prestabanco
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend-network
+    
+
 networks:
   frontend-network:
   backend-network:
+volumes:
+  postgres_data:
