@@ -1,34 +1,47 @@
 pipeline {
     agent any
-
+    agent any
+    tools {
+        nodejs 'NodeJS_20' 
+    }
     stages {
-        stage('Build Frontend') {
+        stage('Checkout') {
             steps {
-                // Cambia al directorio del frontend
-                dir('PrestaBanco-frontend') {
-                    // Instala las dependencias y construye el proyecto
-                    bat 'npm install' // Usa 'sh' si estás en un entorno Unix/Linux
-                    bat 'npm run build'
-                }
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TinyAntu/PrestaBanco_App_Monolitica.git']])
+                
             }
         }
 
-        stage('Build Docker Image') {
+         stage('Install dependencies') {
             steps {
-                // Construye la imagen Docker
+                dir('Prestabanco-frontend') {
+                    bat 'mvn clean package'
+                    bat 'npm install' // Instala las dependencias necesarias
+                }  
+            }
+        }
+
+        stage('Build React app') {
+            steps {
+                bat 'npm run build' // Construye la app y genera la carpeta 'dist'
+            }
+        }
+
+        stage('Build docker image') {
+            steps {
                 script {
-                    bat 'docker build -t tinyantu/prestabanco-frontend:latest -f PrestaBanco-frontend/Dockerfile PrestaBanco-frontend'
+                    bat 'docker build -t tinyantu/prestabanco-frontend:latest -f Prestabanco-frontend/Dockerfile Prestabanco-frontend'
                 }
             }
         }
 
-        stage('Push Image to Docker Hub') {
+        stage('Push image to Docker Hub') {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'dckhubpassword', variable: 'dhpsw')]) {
                         bat 'docker login -u tinyantu -p %dhpsw%'
                     }
-                    bat 'docker push tinyantu/prestabanco-frontend:latest'
+                    bat 'docker push tinyantu/prestabanco-frontend:latest' 
                 }
             }
         }
