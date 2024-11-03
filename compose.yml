@@ -79,7 +79,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=Prestabanco
+      - POSTGRES_DB=PrestaBanco
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
