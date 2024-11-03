@@ -14,7 +14,6 @@ pipeline {
          stage('Install dependencies') {
             steps {
                 dir('Prestabanco-frontend') {
-                    bat 'mvn clean package'
                     bat 'npm install' // Instala las dependencias necesarias
                 }  
             }
