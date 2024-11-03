@@ -21,7 +21,9 @@ pipeline {
 
         stage('Build React app') {
             steps {
+                dir('Prestabanco-frontend') {
                 bat 'npm run build' // Construye la app y genera la carpeta 'dist'
+                }
             }
         }
 
