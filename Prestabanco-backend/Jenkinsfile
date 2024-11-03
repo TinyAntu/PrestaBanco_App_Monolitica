@@ -24,7 +24,7 @@ pipeline {
         stage('Build docker image') {
             steps {
                 script {
-                    bat 'docker build -t tinyantu/prestabanco:latest -f Prestabanco-backend/Dockerfile Prestabanco-backend'
+                    bat 'docker build -t tinyantu/prestabanco-backend:latest -f Prestabanco-backend/Dockerfile Prestabanco-backend'
                 }
             }
         }
@@ -35,7 +35,7 @@ pipeline {
                     withCredentials([string(credentialsId: 'dckhubpassword', variable: 'dhpsw')]) {
                         bat 'docker login -u tinyantu -p %dhpsw%'
                     }
-                    bat 'docker push tinyantu/prestabanco:latest' 
+                    bat 'docker push tinyantu/prestabanco-backend:latest' 
                 }
             }
         }
