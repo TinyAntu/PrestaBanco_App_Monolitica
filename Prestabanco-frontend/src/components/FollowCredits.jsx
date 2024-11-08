@@ -281,7 +281,7 @@ function FollowCredits() {
                                         size="small"
                                         onClick={() => handleFollowClick(credit)}
                                     >
-                                        Consultar
+                                        Ver resultados
                                         
                                     </Button>
                                     {(credit.e === 9 || credit.e === 4 || credit.e === 6) && (
